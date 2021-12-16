@@ -22,8 +22,10 @@ public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, 
             "RETURN collect(d), collect(po)")
     List<Employee> customQueryGetTeammates(@Param("techLeader") TechLeaderEntity techLeaderEntity);
 
-    @Query("")
-    List<TaskEntity> customQueryGetCurrentTasks(TechLeaderEntity techLeaderEntity);
+    @Query("MATCH (t:Task {status:\"ACTIVE\"})-" +
+            "[:SOLVED_BY]->(:TechLeader {name: $techLeader.name, surname: $techLeader.surname}) " +
+            "RETURN collect(t)")
+    List<TaskEntity> customQueryGetCurrentTasks(@Param("techLeader") TechLeaderEntity techLeaderEntity);
 
     @Query("")
     List<TaskEntity> customQueryGetSuggestedTasks(TechLeaderEntity techLeaderEntity);

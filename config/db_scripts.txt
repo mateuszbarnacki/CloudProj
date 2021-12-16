@@ -96,3 +96,20 @@ MATCH (t:Task)-[:CREATED_BY]->(n {email: "lukbia@wfiis.pl"}) RETURN collect(t)
 
 // TASKI ROZWIĄZANE PRZEZ PRACOWNIKA
 MATCH (t:Task)-[:SOLVED_BY]->(n {email: "matbar@wfiis.pl"}) RETURN collect(t)
+
+// Zmiana statusu taska
+MATCH (t:Task {title:"Task4", project:"Proj", status:"ACTIVE"}) SET t.status="FINISHED"
+
+// Taski aktualnie rozwiązywane przez TechLead'a
+MATCH (t:Task {status:"ACTIVE"})-[:SOLVED_BY]->(:TechLeader {name: "Luk", surname:"Bia"}) RETURN collect(t)
+
+// Taski aktualnie rozwiązywane przez Developer'a
+MATCH (t:Task {status:"ACTIVE"})-[:SOLVED_BY]->(:Developer {name: "Mat", surname: "Bar"}) RETURN collect(t)
+
+// Taski sugerowane
+MATCH (t:Task {status:"FINISHED"})-[:SOLVED_BY]->(:Developer {name: "Mat", surname: "Bar"})
+WITH collect(t.project) AS projects
+MATCH (nt:Task {status:"NOT_ACTIVE"})
+WHERE any(suggestion IN projects WHERE suggestion = nt.project)
+RETURN collect(nt)
+LIMIT 3

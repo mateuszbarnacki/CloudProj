@@ -22,9 +22,17 @@ public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Lo
             "RETURN collect(t), collect(od), collect(po)")
     List<Employee> customQueryGetTeammates(@Param("developer") DeveloperEntity developer);
 
-    @Query("")
-    List<TaskEntity> customQueryGetCurrentTasks(DeveloperEntity developer);
+    @Query("MATCH (t:Task {status:\"ACTIVE\"})-" +
+            "[:SOLVED_BY]->(:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
+            "RETURN collect(t)")
+    List<TaskEntity> customQueryGetCurrentTasks(@Param("developer") DeveloperEntity developer);
 
-    @Query("")
-    List<TaskEntity> customQueryGetSuggestedTasks(DeveloperEntity developer);
+    @Query("MATCH (t:Task {status:\"FINISHED\"})-[:SOLVED_BY]->(:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) \n" +
+            "WITH collect(t.project) AS projects\n" +
+            "MATCH (nt:Task {status:\"NOT_ACTIVE\"})\n" +
+            "WHERE any(suggestion IN projects WHERE suggestion = nt.project)\n" +
+            "RETURN collect(nt) \n" +
+            "LIMIT 3")
+    List<TaskEntity> customQueryGetSuggestedTasks(@Param("developer") DeveloperEntity developer);
+
 }
