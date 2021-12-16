@@ -27,9 +27,9 @@ public class TaskEntity {
     private String description;
     private Status status;
 
-    @Relationship(type = "CREATED_BY", direction = Relationship.Direction.INCOMING)
+    @Relationship(type = "CREATED_BY", direction = Relationship.Direction.OUTGOING)
     private Set<Employee> creators = new HashSet<>();
-    @Relationship(type = "SOLVED_BY", direction = Relationship.Direction.INCOMING)
+    @Relationship(type = "SOLVED_BY", direction = Relationship.Direction.OUTGOING)
     private Set<Employee> solvers = new HashSet<>();
 
     public TaskEntity(String title, String content, String projectName, Status status) {

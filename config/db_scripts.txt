@@ -1,0 +1,98 @@
+CREATE (d: Developer {name:"Mat", surname:"Bar", email:"matbar@wfiis.pl"})
+CREATE (d1: Developer {name:"Raf", surname:"Kru", email:"rafkru@wfiis.pl"})
+CREATE (d2: Developer {name:"Pio", surname:"Mak", email:"piomak@wfiis.pl"})
+CREATE (d3: Developer {name:"Krz", surname:"Pol", email:"krzpol@wfiis.pl"})
+CREATE (d: Developer {name:"Kac", surname:"Sta", email:"kacsta@wfiis.pl"})
+
+CREATE (tl: TechLeader {name:"Hub", surname:"Bud", email:"hubbud@wfiis.pl"})
+CREATE (tl: TechLeader {name:"Luk", surname:"Bia", email:"lukbia@wfiis.pl"})
+
+CREATE (po: ProductOwner {name:"Bar", surname:"Kwa", email:"barkwa@wfiis.pl"})
+
+MATCH (tl:TechLeader), (d:Developer)
+WHERE tl.name="Luk" AND tl.surname="Bia" AND d.name="Mat" AND d.surname="Bar"
+CREATE (tl)-[r:GIVE_TASKS_FOR]->(d)
+RETURN type(r)
+
+MATCH (tl:TechLeader), (d:Developer)
+WHERE tl.name="Luk" AND tl.surname="Bia" AND d.name="Raf" AND d.surname="Kru"
+CREATE (tl)-[r:GIVE_TASKS_FOR]->(d)
+RETURN type(r)
+
+MATCH (tl:TechLeader), (d:Developer)
+WHERE tl.name="Luk" AND tl.surname="Bia" AND d.name="Pio" AND d.surname="Mak"
+CREATE (tl)-[r:GIVE_TASKS_FOR]->(d)
+RETURN type(r)
+
+MATCH (tl:TechLeader), (d:Developer)
+WHERE tl.name="Luk" AND tl.surname="Bia" AND d.name="Krz" AND d.surname="Pol"
+CREATE (tl)-[r:GIVE_TASKS_FOR]->(d)
+RETURN type(r)
+
+MATCH (po:ProductOwner), (tl:TechLeader)
+WHERE po.name="Bar" AND po.surname="Kwa" AND tl.name="Luk" AND tl.surname="Bia"
+CREATE (po)-[r:COOPERATES_WITH]->(tl)
+RETURN type(r)
+
+CREATE (t: Task {title:"Task1", project:"Proj", description: "Test", status: "ACTIVE"})
+CREATE (t1: Task {title:"Task2", project:"Proj", description: "Test", status: "ACTIVE"})
+CREATE (t2: Task {title:"Task3", project:"Proj", description: "Test", status: "ACTIVE"})
+CREATE (t3: Task {title:"Task4", project:"Proj", description: "Test", status: "ACTIVE"})
+
+MATCH (d:Developer), (t:Task)
+WHERE d.name="Mat" AND d.surname="Bar" AND t.title="Task1"
+CREATE (t)-[r:SOLVED_BY]->(d)
+RETURN type(r)
+
+MATCH (tl:TechLeader), (t:Task)
+WHERE tl.name="Luk" AND tl.surname="Bia" AND t.title="Task1"
+CREATE (t)-[r:CREATED_BY]->(tl)
+RETURN type(r)
+
+MATCH (t:Task {title: "Task1"})
+SET t.status = "FINISHED"
+RETURN t
+
+// DO CZYSZCZENIA NIEPOTRZEBNYCH PROPERTY
+MATCH (t:Task {title: "Task1"})
+REMOVE t.statUs
+RETURN t
+
+// USUNIĘCIE NODE'A Z RELACJAMI
+MATCH (n:Task {title: "Task1"})
+DETACH DELETE n
+
+// ZAKOŃCZENIE TASKA PRZEZ DEVELOPERA
+MATCH (d:Developer {name:"Pio", surname:"Mak"}), (t: Task {title: "Task2", project:"Proj", description:"Test", status:"ACTIVE"})
+CREATE (t)-[r:SOLVED_BY]->(d)
+SET t.status="FINISHED"
+RETURN type(r)
+
+// UTWORZENIE TASKA PRZEZ TechLeader'a
+MATCH (tl:TechLeader {name:"Luk", surname:"Bia"}), (t:Task {title:"Task2", project:"Proj", description:"Test", status:"FINISHED"})
+CREATE (t)-[r:CREATED_BY]->(tl)
+RETURN type(r)
+
+MATCH (tl:TechLeader {name:"Luk", surname:"Bia"}), (t:Task {title:"Task4"})
+CREATE (t)-[r:CREATED_BY]->(tl)
+RETURN type(r)
+
+MATCH (tl:TechLeader {name:"Hub", surname:"Bud"}), (t:Task {title:"Task3"})
+CREATE (t)-[r:CREATED_BY]->(tl)
+RETURN type(r)
+
+// TASKI O DANYM STATUSIE
+MATCH (t:Task) WHERE t.status = "NOT_ACTIVE" RETURN collect(t)
+
+MATCH (t:Task) WHERE t.status = "ACTIVE" RETURN collect(t)
+
+MATCH (t:Task) WHERE t.status = "FINISHED" RETURN collect(t)
+
+// TASKI NIEAKTYWNE Z DANEGO PROJEKTU
+MATCH (t:Task) WHERE t.status = "NOT_ACTIVE" AND t.project = "Proj" RETURN collect(t)
+
+// TASKI UTWORZONE PRZEZ PRACOWNIKA
+MATCH (t:Task)-[:CREATED_BY]->(n {email: "lukbia@wfiis.pl"}) RETURN collect(t)
+
+// TASKI ROZWIĄZANE PRZEZ PRACOWNIKA
+MATCH (t:Task)-[:SOLVED_BY]->(n {email: "matbar@wfiis.pl"}) RETURN collect(t)
