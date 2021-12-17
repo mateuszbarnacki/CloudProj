@@ -20,9 +20,7 @@ public interface TaskRepository extends Neo4jRepository<TaskEntity, Long> {
     @Query("MATCH (t:Task) WHERE t.status = \"NOT_ACTIVE\" RETURN collect(t)")
     List<TaskEntity> customQueryGetAllNotActiveTasks();
 
-    @Query("MATCH (t:Task {title:$task.title, project:$task.project, status:$task.status}) " +
-            "SET t.status=\"FINISHED\" " +
-            "RETURN t")
-    TaskEntity customQueryFinishActiveTask(@Param("task") TaskEntity task);
+    @Query("MATCH (t: Task{project: $projectName}) DETACH DELETE t")
+    void customQueryDeleteAllTasksFromProject(@Param("projectName") String project);
 
 }

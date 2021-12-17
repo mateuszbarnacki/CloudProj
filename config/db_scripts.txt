@@ -113,3 +113,43 @@ MATCH (nt:Task {status:"NOT_ACTIVE"})
 WHERE any(suggestion IN projects WHERE suggestion = nt.project)
 RETURN collect(nt)
 LIMIT 3
+
+// Rozpoczęcie zadania przez Developera
+MATCH (t:Task {title:"Task3", project:"Proj", description:"Test", status:"NOT_ACTIVE"}), (d:Developer {name:"Raf", surname:"Kru", email:"rafkru@wfiis.pl"})
+CREATE (t)-[:SOLVED_BY]->(d)
+SET t.status = "ACTIVE"
+RETURN t
+
+// Zakończenie zadania przez Developera
+MATCH
+(t:Task {title:"Task3", project:"Proj", description:"Test", status:"ACTIVE"})-[:SOLVED_BY]->(:Developer {name:"Raf", surname:"Kru", email:"rafkru@wfiis.pl"})
+SET t.status = "FINISHED"
+RETURN t
+
+// Zadania nieaktywne
+MATCH (t:Task {status:"NOT_ACTIVE"}) RETURN collect(t)
+
+// Dodanie TechLeader'a do ProductOnwer'a
+MATCH (po:ProductOwner {name:"Bar", surname:"Kwa", email:"barkwa@wfiis.pl"}),
+(tl:TechLeader {name:"Hub", surname:"Bud", email:"hubbud@wfiis.pl"})
+CREATE (po)-[:COOPERATES_WITH]->(tl)
+RETURN po
+
+// Wszystkie taski od TechLeader'ów zależnych od danego ProductOwner'a
+MATCH (:ProductOwner {name:"Bar", surname:"Kwa", email:"barkwa@wfiis.pl"})-
+[:COOPERATES_WITH]->(:TechLeader)<-[:CREATED_BY]-(t:Task)
+RETURN collect(t)
+
+// Rozwiązanie zespołu i usunięcie ProductOwner'a
+MATCH (po:ProductOwner {name: "Bar", surname: "Kwa", email: "barkwa@wfiis.pl"})-
+[r:COOPERATES_WITH]->(:TechLeader)-[nr:GIVE_TASKS_FOR]->(:Developer)
+DELETE r, nr, po
+
+// Przypisanie Developer'a do TechLeader'a
+MATCH (tl: TechLeader{name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}),
+(d: Developer{name: $developer.name, surname: $developer.surname, email: $developer.email})
+CREATE (tl)-[:GIVE_TASKS_FOR]->(d)
+RETURN d
+
+// Usunięcie wszystkich zadań z relacjami z projektu
+MATCH (t: Task{project: "Proj"}) DETACH DELETE t

@@ -15,6 +15,25 @@ public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Lo
     @Query("MATCH (d: Developer) WHERE NOT (d)<-[:GIVE_TASKS_FOR]-(:TechLeader) RETURN collect(d)")
     List<Employee> customQueryGetAvailableDevelopers();
 
+    @Query("MATCH (t:Task {title: $task.title, project: $task.project, description: $task.description, status: $task.status}), " +
+            "(d:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
+            "CREATE (t)-[:SOLVED_BY]->(d) " +
+            "SET t.status = \"ACTIVE\" " +
+            "RETURN t")
+    TaskEntity customQueryStartTask(@Param("task") TaskEntity taskEntity,
+                                    @Param("developer") DeveloperEntity developerEntity);
+
+    @Query("MATCH " +
+            "(t:Task {title: $task.title, project: $task.project, description: $task.description, status: $task.status})-" +
+            "[:SOLVED_BY]->(:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
+            "SET t.status = \"FINISHED\" " +
+            "RETURN t")
+    TaskEntity customQueryFinishTask(@Param("task") TaskEntity taskEntity,
+                                     @Param("developer") DeveloperEntity developerEntity);
+
+    @Query("MATCH (t:Task {status:\"NOT_ACTIVE\"}) RETURN collect(t)")
+    List<TaskEntity> customQueryGetAllNotActiveTasks();
+
     @Query("MATCH (d: Developer {name: $developer.name, surname: $developer.surname, email: $developer.email})<-" +
             "[:GIVE_TASKS_FOR]-(t: TechLeader)-" +
             "[:GIVE_TASKS_FOR]->(od: Developer) " +
@@ -32,7 +51,7 @@ public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Lo
             "MATCH (nt:Task {status:\"NOT_ACTIVE\"})\n" +
             "WHERE any(suggestion IN projects WHERE suggestion = nt.project)\n" +
             "RETURN collect(nt) \n" +
-            "LIMIT 3")
+            "LIMIT 5")
     List<TaskEntity> customQueryGetSuggestedTasks(@Param("developer") DeveloperEntity developer);
 
 }

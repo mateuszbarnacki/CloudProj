@@ -1,5 +1,6 @@
 package com.example.proj.repository;
 
+import com.example.proj.model.DeveloperEntity;
 import com.example.proj.model.Employee;
 import com.example.proj.model.ProductOwnerEntity;
 import com.example.proj.model.TaskEntity;
@@ -22,12 +23,18 @@ public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, 
             "RETURN collect(d), collect(po)")
     List<Employee> customQueryGetTeammates(@Param("techLeader") TechLeaderEntity techLeaderEntity);
 
-    @Query("MATCH (t:Task {status:\"ACTIVE\"})-" +
-            "[:SOLVED_BY]->(:TechLeader {name: $techLeader.name, surname: $techLeader.surname}) " +
-            "RETURN collect(t)")
-    List<TaskEntity> customQueryGetCurrentTasks(@Param("techLeader") TechLeaderEntity techLeaderEntity);
+    @Query("MATCH (tl: TechLeader{name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}), " +
+            "(d: Developer{name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
+            "CREATE (tl)-[:GIVE_TASKS_FOR]->(d) " +
+            "RETURN d")
+    DeveloperEntity customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
+                                             @Param("developer") DeveloperEntity developerEntity);
 
-    @Query("")
-    List<TaskEntity> customQueryGetSuggestedTasks(TechLeaderEntity techLeaderEntity);
+    @Query("MATCH (tl:TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}) " +
+            "CREATE (t:Task {title: $task.title project: $task.project, description: $task.description, status: $task.status})-" +
+            "[r:CREATED_BY]->(tl) " +
+            "RETURN t")
+    TaskEntity customQueryCreateTask(@Param("techLeader") TechLeaderEntity techLeaderEntity,
+                                     @Param("task") TaskEntity taskEntity);
 
 }
