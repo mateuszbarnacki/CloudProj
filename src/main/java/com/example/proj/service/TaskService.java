@@ -2,7 +2,6 @@ package com.example.proj.service;
 
 import com.example.proj.dto.TaskDTO;
 import com.example.proj.mapper.TaskMapper;
-import com.example.proj.model.ProductOwnerEntity;
 import com.example.proj.model.TaskEntity;
 import com.example.proj.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
