@@ -16,8 +16,8 @@ public class ProductOwnerEntity extends Employee {
     @Relationship(type = "COOPERATES_WITH", direction = Relationship.Direction.OUTGOING)
     private Set<TechLeaderEntity> techLeaders = new HashSet<>();
 
-    public ProductOwnerEntity(String name, String surname, String email) {
-        super(name, surname, email);
+    public ProductOwnerEntity() {
+        super();
     }
 
 }

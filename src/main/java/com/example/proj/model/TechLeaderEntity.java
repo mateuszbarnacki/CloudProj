@@ -18,8 +18,8 @@ public class TechLeaderEntity extends Employee {
     @Relationship(type = "COOPERATES_WITH", direction = Relationship.Direction.OUTGOING)
     private Set<ProductOwnerEntity> productOwners = new HashSet<>();
 
-    public TechLeaderEntity(String name, String surname, String email) {
-        super(name, surname, email);
+    public TechLeaderEntity() {
+        super();
     }
 
 }
