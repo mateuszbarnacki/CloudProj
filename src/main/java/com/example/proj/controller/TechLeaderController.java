@@ -2,13 +2,13 @@ package com.example.proj.controller;
 
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.dto.TaskDTO;
-import com.example.proj.dto.TeamDTO;
 import com.example.proj.service.TechLeaderService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,43 +27,51 @@ public class TechLeaderController {
 
     @GetMapping("/{name}/{surname}/{email}")
     public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
-                                                     @PathVariable String surname,
-                                                     @PathVariable String email) {
+                                                       @PathVariable String surname,
+                                                       @PathVariable String email) {
         return techLeaderService.getSingleRecord(name, surname, email)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't find tech leader record."));
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<EmployeeDTO>> getAvailableTechLeaders(@RequestBody @Valid EmployeeDTO productOwner) {
-        return ResponseEntity.ok(techLeaderService.getAvailableTechLeaders(productOwner));
+    public ResponseEntity<List<EmployeeDTO>> getAvailableTechLeaders() {
+        return ResponseEntity.ok(techLeaderService.getAvailableTechLeaders());
     }
 
     @GetMapping("/team")
-    public ResponseEntity<TeamDTO> getTeammates() {
-        return ResponseEntity.ok(techLeaderService.getTeammates());
+    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid EmployeeDTO employeeDTO) {
+        return ResponseEntity.ok(techLeaderService.getTeammates(employeeDTO));
     }
 
-    @GetMapping("/current_task")
-    public ResponseEntity<List<TaskDTO>> getCurrentTasks() {
-        return ResponseEntity.ok(techLeaderService.getCurrentTasks());
+    @PatchMapping("/developer")
+    public ResponseEntity<EmployeeDTO> addDeveloper(@RequestBody @Valid EmployeeDTO techLeader,
+                                                    @RequestBody @Valid EmployeeDTO developer) {
+        return techLeaderService.addDeveloper(techLeader, developer)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
     }
 
-    @GetMapping("/suggested_task")
-    public ResponseEntity<List<TaskDTO>> getSuggestedTasks() {
-        return ResponseEntity.ok(techLeaderService.getSuggestedTasks());
+    @PostMapping("/task")
+    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid EmployeeDTO employeeDTO,
+                                              @RequestBody @Valid TaskDTO taskDTO) {
+        return techLeaderService.createTask(employeeDTO, taskDTO)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't create task!"));
     }
 
     @PostMapping("")
     public ResponseEntity<EmployeeDTO> create(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        EmployeeDTO employee = techLeaderService.create(employeeDTO);
-        return ResponseEntity.ok(employee);
+        return techLeaderService.create(employeeDTO)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't create tech leader entity!"));
     }
 
     @PutMapping("")
     public ResponseEntity<EmployeeDTO> update(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        EmployeeDTO employee = techLeaderService.update(employeeDTO);
-        return ResponseEntity.ok(employee);
+        return techLeaderService.update(employeeDTO)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't update tech leader entity!"));
     }
 
     @DeleteMapping("/{id}")

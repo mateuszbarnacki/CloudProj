@@ -10,12 +10,13 @@ import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, Long> {
-    TechLeaderEntity findTechLeaderEntityByNameAndSurnameAndEmail(String name, String surname, String email);
+    Optional<TechLeaderEntity> findTechLeaderEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH (tl: TechLeader) WHERE NOT (tl)<-[:COOPERATES_WITH]-(:ProductOwner) RETURN collect(tl)")
-    List<TechLeaderEntity> customQueryGetAvailableTechLeaders(ProductOwnerEntity productOwner);
+    List<TechLeaderEntity> customQueryGetAvailableTechLeaders();
 
     @Query("MATCH (t: TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email})-" +
             "[:GIVE_TASKS_FOR]->(d: Developer) " +
@@ -27,14 +28,14 @@ public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, 
             "(d: Developer{name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
             "CREATE (tl)-[:GIVE_TASKS_FOR]->(d) " +
             "RETURN d")
-    DeveloperEntity customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
-                                             @Param("developer") DeveloperEntity developerEntity);
+    Optional<DeveloperEntity> customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
+                                                      @Param("developer") DeveloperEntity developerEntity);
 
     @Query("MATCH (tl:TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}) " +
             "CREATE (t:Task {title: $task.title project: $task.project, description: $task.description, status: $task.status})-" +
             "[r:CREATED_BY]->(tl) " +
             "RETURN t")
-    TaskEntity customQueryCreateTask(@Param("techLeader") TechLeaderEntity techLeaderEntity,
-                                     @Param("task") TaskEntity taskEntity);
+    Optional<TaskEntity> customQueryCreateTask(@Param("techLeader") TechLeaderEntity techLeaderEntity,
+                                               @Param("task") TaskEntity taskEntity);
 
 }

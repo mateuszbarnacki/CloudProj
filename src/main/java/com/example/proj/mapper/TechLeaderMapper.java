@@ -7,7 +7,7 @@ public final class TechLeaderMapper {
     private TechLeaderMapper() {
     }
 
-    public static TechLeaderEntity map(EmployeeDTO employeeDTO) {
+    public TechLeaderEntity map(EmployeeDTO employeeDTO) {
         TechLeaderEntity entity = new TechLeaderEntity();
 
         entity.setName(employeeDTO.getName());
@@ -16,7 +16,7 @@ public final class TechLeaderMapper {
         return entity;
     }
 
-    public static EmployeeDTO map(TechLeaderEntity entity) {
+    public EmployeeDTO map(TechLeaderEntity entity) {
         return new EmployeeDTO.Builder()
                 .name(entity.getName())
                 .surname(entity.getSurname())
