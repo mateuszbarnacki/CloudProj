@@ -2,7 +2,9 @@ package com.example.proj.mapper;
 
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.model.TechLeaderEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class TechLeaderMapper {
     private TechLeaderMapper() {
     }
