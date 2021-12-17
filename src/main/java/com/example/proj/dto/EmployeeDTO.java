@@ -2,17 +2,17 @@ package com.example.proj.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
-
-import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class EmployeeDTO {
+    private Long id;
     private String name;
     private String surname;
-    @NotNull
+    @NonNull
     private String email;
 
     private EmployeeDTO(Builder builder) {

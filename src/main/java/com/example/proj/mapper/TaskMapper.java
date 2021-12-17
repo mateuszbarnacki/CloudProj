@@ -7,14 +7,14 @@ public final class TaskMapper {
     private TaskMapper() {
     }
 
-    public static TaskEntity map(TaskDTO taskDTO) {
+    public TaskEntity map(TaskDTO taskDTO) {
         return new TaskEntity(taskDTO.getTitle(),
                 taskDTO.getDescription(),
                 taskDTO.getProjectName(),
                 taskDTO.getStatus());
     }
 
-    public static TaskDTO map(TaskEntity entity) {
+    public TaskDTO map(TaskEntity entity) {
         return new TaskDTO.Builder()
                 .title(entity.getTitle())
                 .projectName(entity.getProjectName())

@@ -8,28 +8,29 @@ import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Long> {
-    DeveloperEntity findDeveloperEntityByNameAndSurnameAndEmail(String name, String surname, String email);
+    Optional<DeveloperEntity> findDeveloperEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH (d: Developer) WHERE NOT (d)<-[:GIVE_TASKS_FOR]-(:TechLeader) RETURN collect(d)")
-    List<Employee> customQueryGetAvailableDevelopers();
+    List<DeveloperEntity> customQueryGetAvailableDevelopers();
 
     @Query("MATCH (t:Task {title: $task.title, project: $task.project, description: $task.description, status: $task.status}), " +
             "(d:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
             "CREATE (t)-[:SOLVED_BY]->(d) " +
             "SET t.status = \"ACTIVE\" " +
             "RETURN t")
-    TaskEntity customQueryStartTask(@Param("task") TaskEntity taskEntity,
-                                    @Param("developer") DeveloperEntity developerEntity);
+    Optional<TaskEntity> customQueryStartTask(@Param("task") TaskEntity taskEntity,
+                                              @Param("developer") DeveloperEntity developerEntity);
 
     @Query("MATCH " +
             "(t:Task {title: $task.title, project: $task.project, description: $task.description, status: $task.status})-" +
             "[:SOLVED_BY]->(:Developer {name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
             "SET t.status = \"FINISHED\" " +
             "RETURN t")
-    TaskEntity customQueryFinishTask(@Param("task") TaskEntity taskEntity,
-                                     @Param("developer") DeveloperEntity developerEntity);
+    Optional<TaskEntity> customQueryFinishTask(@Param("task") TaskEntity taskEntity,
+                                               @Param("developer") DeveloperEntity developerEntity);
 
     @Query("MATCH (t:Task {status:\"NOT_ACTIVE\"}) RETURN collect(t)")
     List<TaskEntity> customQueryGetAllNotActiveTasks();
