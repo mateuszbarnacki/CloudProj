@@ -1,13 +1,14 @@
 package com.example.proj.controller;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.dto.TeamDTO;
+import com.example.proj.dto.TaskDTO;
 import com.example.proj.service.ProductOwnerService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/product_owner")
@@ -33,25 +35,40 @@ public class ProductOwnerController {
     }
 
     @GetMapping("/team")
-    public ResponseEntity<TeamDTO> getTeammates() {
-        return ResponseEntity.ok(productOwnerService.getTeammates());
+    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid EmployeeDTO employeeDTO) {
+        return ResponseEntity.ok(productOwnerService.getTeammates(employeeDTO));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<List<TaskDTO>> generateReport(@RequestBody @Valid EmployeeDTO employeeDTO) {
+        return ResponseEntity.ok(productOwnerService.generateReport(employeeDTO));
+    }
+
+    @PatchMapping("/tech_leader")
+    public ResponseEntity<EmployeeDTO> addTechLeader(@RequestBody @Valid EmployeeDTO productOwner,
+                                                     @RequestBody @Valid EmployeeDTO techLeader) {
+        return productOwnerService.addTechLead(productOwner, techLeader)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
     }
 
     @PostMapping("")
     public ResponseEntity<EmployeeDTO> create(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        EmployeeDTO employee = productOwnerService.create(employeeDTO);
-        return ResponseEntity.ok(employee);
+        return productOwnerService.create(employeeDTO)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't create product owner entity!"));
     }
 
     @PutMapping("")
     public ResponseEntity<EmployeeDTO> update(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        EmployeeDTO employee = productOwnerService.update(employeeDTO);
-        return ResponseEntity.ok(employee);
+        return productOwnerService.update(employeeDTO)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't update product owner entity!"));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        productOwnerService.delete(id);
+    @DeleteMapping("/close")
+    public ResponseEntity<?> closeTeam(@RequestBody @Valid EmployeeDTO employeeDTO) {
+        productOwnerService.closeTeam(employeeDTO);
         return ResponseEntity.ok()
                 .build();
     }

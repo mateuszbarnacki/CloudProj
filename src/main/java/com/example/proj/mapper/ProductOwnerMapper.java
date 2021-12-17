@@ -7,7 +7,7 @@ public final class ProductOwnerMapper {
     private ProductOwnerMapper() {
     }
 
-    public static ProductOwnerEntity map(EmployeeDTO employeeDTO) {
+    public ProductOwnerEntity map(EmployeeDTO employeeDTO) {
         ProductOwnerEntity entity = new ProductOwnerEntity();
 
         entity.setName(employeeDTO.getName());
@@ -16,7 +16,7 @@ public final class ProductOwnerMapper {
         return entity;
     }
 
-    public static EmployeeDTO map(ProductOwnerEntity entity) {
+    public EmployeeDTO map(ProductOwnerEntity entity) {
         return new EmployeeDTO.Builder()
                 .name(entity.getName())
                 .surname(entity.getSurname())

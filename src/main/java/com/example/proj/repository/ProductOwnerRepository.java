@@ -9,9 +9,10 @@ import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductOwnerRepository extends Neo4jRepository<ProductOwnerEntity, Long> {
-    ProductOwnerEntity findProductOwnerEntityByNameAndSurnameAndEmail(String name, String surname, String email);
+    Optional<ProductOwnerEntity> findProductOwnerEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH " +
             "(po: ProductOwner {name: $productOwner.name, surname: $productOwner.surname, email: $productOwner.email})-" +
@@ -34,6 +35,6 @@ public interface ProductOwnerRepository extends Neo4jRepository<ProductOwnerEnti
             "(tl:TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}) " +
             "CREATE (po)-[:COOPERATES_WITH]->(tl) " +
             "RETURN po")
-    ProductOwnerEntity customQueryAddTechLead(@Param("productOwner") ProductOwnerEntity productOwnerEntity,
-                                              @Param("techLeader") TechLeaderEntity techLeaderEntity);
+    Optional<ProductOwnerEntity> customQueryAddTechLead(@Param("productOwner") ProductOwnerEntity productOwnerEntity,
+                                                        @Param("techLeader") TechLeaderEntity techLeaderEntity);
 }
