@@ -21,36 +21,16 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
 
-    @GetMapping("/{employeeEmail}")
-    public ResponseEntity<List<TaskDTO>> getEmployeeTasks(@PathVariable String employeeEmail) {
-        return ResponseEntity.ok(taskService.getEmployeeTasks(employeeEmail));
-    }
-
-    @GetMapping("/created/{employeeEmail}")
-    public ResponseEntity<List<TaskDTO>> getTaskCreatedByEmployee(@PathVariable String employeeEmail) {
-        return ResponseEntity.ok(taskService.getTaskCreatedByEmployee(employeeEmail));
-    }
-
     @GetMapping("/{projectName}")
     public ResponseEntity<List<TaskDTO>> getNotActiveTasksFromProject(@PathVariable String projectName) {
         return ResponseEntity.ok(taskService.getNotActiveTasksFromProject(projectName));
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<TaskDTO>> getNotActiveTasks() {
-        return ResponseEntity.ok(taskService.getNotActiveTasks());
-    }
-
-    @PostMapping("")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid TaskDTO task) {
-        TaskDTO taskDto = taskService.create(task);
-        return ResponseEntity.ok(taskDto);
-    }
-
     @PostMapping("/{projectName}")
     public ResponseEntity<TaskDTO> updateTask(@RequestBody @Valid TaskDTO task) {
-        TaskDTO taskDto = taskService.update(task);
-        return ResponseEntity.ok(taskDto);
+        return taskService.update(task)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalStateException("Couldn't update task with id: " + task.getId()));
     }
 
     @DeleteMapping("/{projectName}")
