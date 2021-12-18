@@ -19,7 +19,7 @@ public final class TaskMapper {
     public TaskDTO map(TaskEntity entity) {
         return new TaskDTO.Builder()
                 .title(entity.getTitle())
-                .projectName(entity.getProjectName())
+                .projectName(entity.getProject())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .build();

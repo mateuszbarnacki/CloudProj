@@ -2,7 +2,6 @@ package com.example.proj.repository;
 
 import com.example.proj.model.DeveloperEntity;
 import com.example.proj.model.Employee;
-import com.example.proj.model.TaskEntity;
 import com.example.proj.model.TechLeaderEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -28,15 +27,8 @@ public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, 
     @Query("MATCH (tl: TechLeader{name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}), " +
             "(d: Developer{name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
             "CREATE (tl)-[:GIVE_TASKS_FOR]->(d) " +
-            "RETURN d")
-    Optional<DeveloperEntity> customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
-                                                      @Param("developer") DeveloperEntity developerEntity);
-
-    @Query("MATCH (tl:TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}) " +
-            "CREATE (t:Task {title: $task.title project: $task.project, description: $task.description, status: $task.status})-" +
-            "[r:CREATED_BY]->(tl) " +
-            "RETURN t")
-    Optional<TaskEntity> customQueryCreateTask(@Param("techLeader") TechLeaderEntity techLeaderEntity,
-                                               @Param("task") TaskEntity taskEntity);
+            "RETURN tl")
+    Optional<TechLeaderEntity> customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
+                                                       @Param("developer") DeveloperEntity developerEntity);
 
 }

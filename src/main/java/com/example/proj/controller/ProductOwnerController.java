@@ -1,7 +1,6 @@
 package com.example.proj.controller;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.dto.TaskDTO;
 import com.example.proj.service.ProductOwnerService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
@@ -37,11 +36,6 @@ public class ProductOwnerController {
     @GetMapping("/team")
     public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid EmployeeDTO employeeDTO) {
         return ResponseEntity.ok(productOwnerService.getTeammates(employeeDTO));
-    }
-
-    @GetMapping("/report")
-    public ResponseEntity<List<TaskDTO>> generateReport(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(productOwnerService.generateReport(employeeDTO));
     }
 
     @PatchMapping("/tech_leader")

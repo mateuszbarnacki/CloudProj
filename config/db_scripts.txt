@@ -34,10 +34,10 @@ WHERE po.name="Bar" AND po.surname="Kwa" AND tl.name="Luk" AND tl.surname="Bia"
 CREATE (po)-[r:COOPERATES_WITH]->(tl)
 RETURN type(r)
 
-CREATE (t: Task {title:"Task1", project:"Proj", description: "Test", status: "ACTIVE"})
-CREATE (t1: Task {title:"Task2", project:"Proj", description: "Test", status: "ACTIVE"})
+CREATE (t: Task {title:"Task1", project:"Proj", description: "Test", status: "NOT_ACTIVE"})
+CREATE (t1: Task {title:"Task2", project:"Proj", description: "Test", status: "NOT_ACTIVE"})
 CREATE (t2: Task {title:"Task3", project:"Proj", description: "Test", status: "ACTIVE"})
-CREATE (t3: Task {title:"Task4", project:"Proj", description: "Test", status: "ACTIVE"})
+CREATE (t3: Task {title:"Task4", project:"Proj", description: "Test", status: "FINISHED"})
 
 MATCH (d:Developer), (t:Task)
 WHERE d.name="Mat" AND d.surname="Bar" AND t.title="Task1"

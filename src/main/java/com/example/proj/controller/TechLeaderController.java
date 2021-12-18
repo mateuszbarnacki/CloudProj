@@ -1,7 +1,6 @@
 package com.example.proj.controller;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.dto.TaskDTO;
 import com.example.proj.service.TechLeaderService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
@@ -50,14 +49,6 @@ public class TechLeaderController {
         return techLeaderService.addDeveloper(techLeader, developer)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
-    }
-
-    @PostMapping("/task")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid EmployeeDTO employeeDTO,
-                                              @RequestBody @Valid TaskDTO taskDTO) {
-        return techLeaderService.createTask(employeeDTO, taskDTO)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalStateException("Couldn't create task!"));
     }
 
     @PostMapping("")
