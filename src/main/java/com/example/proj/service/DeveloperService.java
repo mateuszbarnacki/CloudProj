@@ -3,12 +3,17 @@ package com.example.proj.service;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.mapper.DeveloperMapper;
 import com.example.proj.mapper.EmployeeMapper;
+import com.example.proj.mapper.ProductOwnerMapper;
+import com.example.proj.mapper.TechLeaderMapper;
 import com.example.proj.model.DeveloperEntity;
 import com.example.proj.repository.DeveloperRepository;
+import com.example.proj.team.TeamResults;
+import com.example.proj.team.TeamResultsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -21,6 +26,7 @@ import java.util.stream.Collectors;
 public class DeveloperService {
     private final DeveloperRepository developerRepository;
     private final DeveloperMapper developerMapper;
+    private final TeamResultsImpl teamResults;
     private final EmployeeMapper employeeMapper;
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
@@ -36,11 +42,9 @@ public class DeveloperService {
     }
 
     public List<EmployeeDTO> getTeammates(EmployeeDTO employeeDTO) {
-        DeveloperEntity entity = developerMapper.map(employeeDTO);
-        return developerRepository.customQueryGetTeammates(entity)
-                .stream()
-                .map(employeeMapper::map)
-                .collect(Collectors.toList());
+        DeveloperEntity developerEntity = developerMapper.map(employeeDTO);
+        List<TeamResults.Team> test = new ArrayList<>(teamResults.getTeammatesByDeveloper(developerEntity));
+        return new ArrayList<>();
     }
 
     public Optional<EmployeeDTO> create(EmployeeDTO employeeDTO) {
@@ -70,4 +74,5 @@ public class DeveloperService {
                 .orElseThrow(() -> new NoSuchElementException("Couldn't find developer with id: " + id));
         developerRepository.delete(entity);
     }
+
 }

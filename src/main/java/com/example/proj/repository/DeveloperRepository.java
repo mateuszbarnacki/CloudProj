@@ -1,7 +1,7 @@
 package com.example.proj.repository;
 
+import com.example.proj.dto.TeamDTO;
 import com.example.proj.model.DeveloperEntity;
-import com.example.proj.model.Employee;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +21,7 @@ public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Lo
             "[:GIVE_TASKS_FOR]-(t: TechLeader)-" +
             "[:GIVE_TASKS_FOR]->(od: Developer) " +
             "MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-            "RETURN collect(t), collect(od), collect(po)")
-    List<Employee> customQueryGetTeammates(@Param("developer") DeveloperEntity developer);
+            "RETURN collect(po), collect(t), collect(od)")
+    TeamDTO customQueryGetTeammates(@Param("developer") DeveloperEntity developer);
+
 }
