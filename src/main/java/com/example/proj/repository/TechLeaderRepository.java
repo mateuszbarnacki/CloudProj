@@ -1,6 +1,5 @@
 package com.example.proj.repository;
 
-import com.example.proj.model.DeveloperEntity;
 import com.example.proj.model.Employee;
 import com.example.proj.model.TechLeaderEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -24,11 +23,15 @@ public interface TechLeaderRepository extends Neo4jRepository<TechLeaderEntity, 
             "RETURN collect(d), collect(po)")
     List<Employee> customQueryGetTeammates(@Param("techLeader") TechLeaderEntity techLeaderEntity);
 
-    @Query("MATCH (tl: TechLeader{name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}), " +
-            "(d: Developer{name: $developer.name, surname: $developer.surname, email: $developer.email}) " +
+    @Query("MATCH (tl: TechLeader{name: $techLeaderName, surname: $techLeaderSurname, email: $techLeaderEmail}), " +
+            "(d: Developer{name: $developerName, surname: $developerSurname, email: $developerEmail}) " +
             "CREATE (tl)-[:GIVE_TASKS_FOR]->(d) " +
             "RETURN tl")
-    Optional<TechLeaderEntity> customQueryAddDeveloper(@Param("techLeader") TechLeaderEntity techLeaderEntity,
-                                                       @Param("developer") DeveloperEntity developerEntity);
+    Optional<TechLeaderEntity> customQueryAddDeveloper(@Param("techLeaderName") String techLeaderName,
+                                                       @Param("techLeaderSurname") String techLeaderSurname,
+                                                       @Param("techLeaderEmail") String techLeaderEmail,
+                                                       @Param("developerName") String developerName,
+                                                       @Param("developerSurname") String developerSurname,
+                                                       @Param("developerEmail") String developerEmail);
 
 }

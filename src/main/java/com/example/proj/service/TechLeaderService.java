@@ -1,10 +1,8 @@
 package com.example.proj.service;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.mapper.DeveloperMapper;
 import com.example.proj.mapper.EmployeeMapper;
 import com.example.proj.mapper.TechLeaderMapper;
-import com.example.proj.model.DeveloperEntity;
 import com.example.proj.model.TechLeaderEntity;
 import com.example.proj.repository.TechLeaderRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,6 @@ public class TechLeaderService {
     private final TechLeaderRepository techLeaderRepository;
     private final TechLeaderMapper techLeaderMapper;
     private final EmployeeMapper employeeMapper;
-    private final DeveloperMapper developerMapper;
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return techLeaderRepository.findTechLeaderEntityByNameAndSurnameAndEmail(name, surname, email)
@@ -47,10 +44,8 @@ public class TechLeaderService {
     }
 
     public Optional<EmployeeDTO> addDeveloper(EmployeeDTO techLeaderDTO, EmployeeDTO developerDTO) {
-        TechLeaderEntity techLeader = techLeaderMapper.map(techLeaderDTO);
-        DeveloperEntity developer = developerMapper.map(developerDTO);
-
-        return techLeaderRepository.customQueryAddDeveloper(techLeader, developer)
+        return techLeaderRepository.customQueryAddDeveloper(techLeaderDTO.getName(), techLeaderDTO.getSurname(),
+                        techLeaderDTO.getEmail(), developerDTO.getName(), developerDTO.getSurname(), developerDTO.getEmail())
                 .map(employeeMapper::map);
     }
 
