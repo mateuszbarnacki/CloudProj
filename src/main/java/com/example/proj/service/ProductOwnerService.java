@@ -3,9 +3,7 @@ package com.example.proj.service;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.mapper.EmployeeMapper;
 import com.example.proj.mapper.ProductOwnerMapper;
-import com.example.proj.mapper.TechLeaderMapper;
 import com.example.proj.model.ProductOwnerEntity;
-import com.example.proj.model.TechLeaderEntity;
 import com.example.proj.repository.ProductOwnerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ public class ProductOwnerService {
     private final ProductOwnerRepository productOwnerRepository;
     private final ProductOwnerMapper productOwnerMapper;
     private final EmployeeMapper employeeMapper;
-    private final TechLeaderMapper techLeaderMapper;
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return productOwnerRepository.findProductOwnerEntityByNameAndSurnameAndEmail(name, surname, email)
@@ -41,10 +38,8 @@ public class ProductOwnerService {
     }
 
     public Optional<EmployeeDTO> addTechLead(EmployeeDTO productOwnerDTO, EmployeeDTO techLeadDTO) {
-        ProductOwnerEntity productOwner = productOwnerMapper.map(productOwnerDTO);
-        TechLeaderEntity techLeader = techLeaderMapper.map(techLeadDTO);
-
-        return productOwnerRepository.customQueryAddTechLead(productOwner, techLeader)
+        return productOwnerRepository.customQueryAddTechLead(productOwnerDTO.getName(), productOwnerDTO.getSurname(),
+                        productOwnerDTO.getEmail(), techLeadDTO.getName(), techLeadDTO.getSurname(), techLeadDTO.getEmail())
                 .map(productOwnerMapper::map);
     }
 
@@ -72,6 +67,6 @@ public class ProductOwnerService {
 
     public void closeTeam(EmployeeDTO employeeDTO) {
         ProductOwnerEntity entity = productOwnerMapper.map(employeeDTO);
-        productOwnerRepository.customQueryCloseTeam(entity);
+        productOwnerRepository.customQueryCloseTeam(entity.getName(), entity.getSurname(), entity.getEmail());
     }
 }

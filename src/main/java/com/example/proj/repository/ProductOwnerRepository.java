@@ -2,7 +2,6 @@ package com.example.proj.repository;
 
 import com.example.proj.model.Employee;
 import com.example.proj.model.ProductOwnerEntity;
-import com.example.proj.model.TechLeaderEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,15 +21,21 @@ public interface ProductOwnerRepository extends Neo4jRepository<ProductOwnerEnti
             "RETURN collect(tl), collect(d)")
     List<Employee> customQueryGetTeammates(@Param("productOwner") ProductOwnerEntity productOwner);
 
-    @Query("MATCH (po:ProductOwner {name: $productOwner.name, surname: $productOwner.surname, email: $productOwner.email})-" +
+    @Query("MATCH (po:ProductOwner {name: $productOwnerName, surname: $productOwnerSurname, email: $productOwnerEmail})-" +
             "[r:COOPERATES_WITH]->(:TechLeader)-[nr:GIVE_TASKS_FOR]->(:Developer) " +
             "DELETE r, nr, po")
-    void customQueryCloseTeam(@Param("productOwner") ProductOwnerEntity productOwner);
+    void customQueryCloseTeam(@Param("productOwnerName") String productOwnerName,
+                              @Param("productOwnerSurname") String productOwnerSurname,
+                              @Param("productOwnerEmail") String productOwnerEmail);
 
-    @Query("MATCH (po:ProductOwner {name: $productOwner.name, surname: $productOwner.surname, email: $productOwner.email}), " +
-            "(tl:TechLeader {name: $techLeader.name, surname: $techLeader.surname, email: $techLeader.email}) " +
+    @Query("MATCH (po:ProductOwner {name: $productOwnerName, surname: $productOwnerSurname, email: $productOwnerEmail}), " +
+            "(tl:TechLeader {name: $techLeaderName, surname: $techLeaderSurname, email: $techLeaderEmail}) " +
             "CREATE (po)-[:COOPERATES_WITH]->(tl) " +
             "RETURN po")
-    Optional<ProductOwnerEntity> customQueryAddTechLead(@Param("productOwner") ProductOwnerEntity productOwnerEntity,
-                                                        @Param("techLeader") TechLeaderEntity techLeaderEntity);
+    Optional<ProductOwnerEntity> customQueryAddTechLead(@Param("productOwnerName") String productOwnerName,
+                                                        @Param("productOwnerSurname") String productOwnerSurname,
+                                                        @Param("productOwnerEmail") String email,
+                                                        @Param("techLeaderName") String techLeaderName,
+                                                        @Param("techLeaderSurname") String techLeaderSurname,
+                                                        @Param("techLeaderEmail") String techLeaderEmail);
 }

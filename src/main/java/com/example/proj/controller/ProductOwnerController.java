@@ -1,5 +1,6 @@
 package com.example.proj.controller;
 
+import com.example.proj.dto.DuetDTO;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.service.ProductOwnerService;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +40,8 @@ public class ProductOwnerController {
     }
 
     @PatchMapping("/tech_leader")
-    public ResponseEntity<EmployeeDTO> addTechLeader(@RequestBody @Valid EmployeeDTO productOwner,
-                                                     @RequestBody @Valid EmployeeDTO techLeader) {
-        return productOwnerService.addTechLead(productOwner, techLeader)
+    public ResponseEntity<EmployeeDTO> addTechLeader(@RequestBody @Valid DuetDTO duet) {
+        return productOwnerService.addTechLead(duet.getFirst(), duet.getSecond())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
     }
