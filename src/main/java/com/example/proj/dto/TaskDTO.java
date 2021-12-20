@@ -12,7 +12,7 @@ import lombok.Setter;
 public class TaskDTO {
     private Long id;
     @NonNull
-    private String projectName;
+    private String project;
     @NonNull
     private String title;
     @NonNull
@@ -21,7 +21,7 @@ public class TaskDTO {
     private Status status;
 
     private TaskDTO(Builder builder) {
-        this.projectName = builder.projectName;
+        this.project = builder.projectName;
         this.title = builder.title;
         this.description = builder.description;
         this.status = builder.status;

@@ -1,6 +1,7 @@
 package com.example.proj.controller;
 
 import com.example.proj.dto.EmployeeDTO;
+import com.example.proj.dto.EmployeeWithTaskDTO;
 import com.example.proj.dto.TaskDTO;
 import com.example.proj.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +25,22 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping("/create")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid EmployeeDTO employeeDTO,
-                                              @RequestBody @Valid TaskDTO taskDTO) {
-        return taskService.createTask(employeeDTO, taskDTO)
+    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid EmployeeWithTaskDTO dto) {
+        return taskService.createTask(dto.getEmployee(), dto.getTask())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new IllegalStateException("Couldn't create task!"));
     }
 
     @PatchMapping("/start")
-    public ResponseEntity<TaskDTO> startTask(@RequestBody @Valid TaskDTO taskDTO,
-                                             @RequestBody @Valid EmployeeDTO employeeDTO) {
-        return taskService.startTask(taskDTO, employeeDTO)
+    public ResponseEntity<TaskDTO> startTask(@RequestBody @Valid EmployeeWithTaskDTO dto) {
+        return taskService.startTask(dto.getTask(), dto.getEmployee())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new UnsupportedOperationException("Couldn't start this task."));
     }
 
     @PatchMapping("/finish")
-    public ResponseEntity<TaskDTO> finishTask(@RequestBody @Valid TaskDTO taskDTO,
-                                              @RequestBody @Valid EmployeeDTO employeeDTO) {
-        return taskService.finishTask(taskDTO, employeeDTO)
+    public ResponseEntity<TaskDTO> finishTask(@RequestBody @Valid EmployeeWithTaskDTO dto) {
+        return taskService.finishTask(dto.getTask(), dto.getEmployee())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new UnsupportedOperationException("Couldn't finish this task."));
     }
@@ -67,7 +65,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getNotActiveTasksFromProject(projectName));
     }
 
-    @PostMapping("/{projectName}")
+    @PostMapping("")
     public ResponseEntity<TaskDTO> updateTask(@RequestBody @Valid TaskDTO task) {
         return taskService.update(task)
                 .map(ResponseEntity::ok)

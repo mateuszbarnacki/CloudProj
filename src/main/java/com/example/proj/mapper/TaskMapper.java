@@ -12,7 +12,7 @@ public final class TaskMapper {
     public TaskEntity map(TaskDTO taskDTO) {
         return new TaskEntity(taskDTO.getTitle(),
                 taskDTO.getDescription(),
-                taskDTO.getProjectName(),
+                taskDTO.getProject(),
                 taskDTO.getStatus());
     }
 
