@@ -3,12 +3,16 @@ package com.example.proj.service;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.mapper.EmployeeMapper;
 import com.example.proj.mapper.TechLeaderMapper;
-import com.example.proj.model.TechLeaderEntity;
+import com.example.proj.model.TechLeader;
 import com.example.proj.repository.TechLeaderRepository;
+import com.example.proj.team.TeamResults;
+import com.example.proj.team.TeamResultsImpl;
+import com.example.proj.team.TeamResultsUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -22,6 +26,7 @@ public class TechLeaderService {
     private final TechLeaderRepository techLeaderRepository;
     private final TechLeaderMapper techLeaderMapper;
     private final EmployeeMapper employeeMapper;
+    private final TeamResultsImpl teamResults;
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return techLeaderRepository.findTechLeaderEntityByNameAndSurnameAndEmail(name, surname, email)
@@ -36,11 +41,9 @@ public class TechLeaderService {
     }
 
     public List<EmployeeDTO> getTeammates(EmployeeDTO employeeDTO) {
-        TechLeaderEntity entity = techLeaderMapper.map(employeeDTO);
-        return techLeaderRepository.customQueryGetTeammates(entity)
-                .stream()
-                .map(employeeMapper::map)
-                .collect(Collectors.toList());
+        TechLeader entity = techLeaderMapper.map(employeeDTO);
+        List<TeamResults.Team> data = new ArrayList<>(teamResults.getTeammatesByTechLeader(entity));
+        return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }
 
     public Optional<EmployeeDTO> addDeveloper(EmployeeDTO techLeaderDTO, EmployeeDTO developerDTO) {
@@ -50,7 +53,7 @@ public class TechLeaderService {
     }
 
     public Optional<EmployeeDTO> create(EmployeeDTO employeeDTO) {
-        TechLeaderEntity entity = techLeaderMapper.map(employeeDTO);
+        TechLeader entity = techLeaderMapper.map(employeeDTO);
 
         return Optional.of(techLeaderRepository.save(entity))
                 .map(techLeaderMapper::map);
@@ -58,7 +61,7 @@ public class TechLeaderService {
 
     public Optional<EmployeeDTO> update(EmployeeDTO employeeDTO) {
         if (Objects.nonNull(employeeDTO.getId())) {
-            TechLeaderEntity entity = techLeaderRepository.findById(employeeDTO.getId())
+            TechLeader entity = techLeaderRepository.findById(employeeDTO.getId())
                     .orElseThrow(() ->
                             new NoSuchElementException("Couldn't find tech leader with id: " + employeeDTO.getId()));
             entity.setName(employeeDTO.getName());
@@ -72,7 +75,7 @@ public class TechLeaderService {
     }
 
     public void delete(Long id) {
-        TechLeaderEntity entity = techLeaderRepository.findById(id)
+        TechLeader entity = techLeaderRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Couldn't find tech leader with id: " + id));
         techLeaderRepository.delete(entity);
     }

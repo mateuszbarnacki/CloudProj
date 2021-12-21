@@ -11,12 +11,12 @@ import java.util.Set;
 @Node("ProductOwner")
 @Getter
 @Setter
-public class ProductOwnerEntity extends Employee {
+public class ProductOwner extends Employee {
 
     @Relationship(type = "COOPERATES_WITH", direction = Relationship.Direction.OUTGOING)
-    private Set<TechLeaderEntity> techLeaders = new HashSet<>();
+    private Set<TechLeader> techLeaders = new HashSet<>();
 
-    public ProductOwnerEntity() {
+    public ProductOwner() {
         super();
     }
 

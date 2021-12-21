@@ -3,7 +3,7 @@ package com.example.proj.service;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.dto.TaskDTO;
 import com.example.proj.mapper.TaskMapper;
-import com.example.proj.model.TaskEntity;
+import com.example.proj.model.Task;
 import com.example.proj.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class TaskService {
 
     public Optional<TaskDTO> update(TaskDTO taskDTO) {
         if (Objects.nonNull(taskDTO.getId())) {
-            TaskEntity entity = taskRepository.findById(taskDTO.getId())
+            Task entity = taskRepository.findById(taskDTO.getId())
                     .orElseThrow(() ->
                             new NoSuchElementException("Couldn't find task with id: " + taskDTO.getId()));
             entity.setProject(taskDTO.getProject());

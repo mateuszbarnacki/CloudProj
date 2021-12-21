@@ -1,8 +1,8 @@
 package com.example.proj.team;
 
-import com.example.proj.model.DeveloperEntity;
-import com.example.proj.model.ProductOwnerEntity;
-import com.example.proj.model.TechLeaderEntity;
+import com.example.proj.model.Developer;
+import com.example.proj.model.ProductOwner;
+import com.example.proj.model.TechLeader;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Component;
 
@@ -18,58 +18,58 @@ public class TeamResultsImpl implements TeamResults {
     }
 
     @Override
-    public Collection<Team> getTeammatesByProductOwner(ProductOwnerEntity productOwner) {
+    public Collection<Team> getTeammatesByProductOwner(ProductOwner productOwner) {
         return this.neo4jClient
-                .query("MATCH " +
-                        "(po: ProductOwner {name: $name, surname: $surname, email: $email})-" +
-                        "[:COOPERATES_WITH]->(tl:TechLeader)-" +
-                        "[:GIVE_TASKS_FOR]->(d:Developer) " +
-                        "RETURN collect(po), collect(tl), collect(d)"
+                .query("MATCH (po: ProductOwner {name: $name, surname: $surname, email: $email}) " +
+                        "OPTIONAL MATCH (po)-[:COOPERATES_WITH]->(tl:TechLeader) WITH po, collect(tl) AS techLeaders " +
+                        "OPTIONAL MATCH (po)-[:COOPERATES_WITH]->(:TechLeader)-[:GIVE_TASKS_FOR]->(d:Developer) " +
+                        "RETURN collect(po), techLeaders, collect(d) AS developers"
                 )
-                .bind(productOwner.getName()).to("name")
-                .bind(productOwner.getSurname()).to("surname")
-                .bind(productOwner.getEmail()).to("email")
+                .bind(productOwner.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
+                .bind(productOwner.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
+                .bind(productOwner.getEmail()).to(TeamResultsUtils.EMPLOYEE_EMAIL)
                 .fetchAs(Team.class)
-                .mappedBy(((typeSystem, record) -> new Team(record.get(0),
-                        record.get(1),
-                        record.get(2))))
+                .mappedBy(((typeSystem, resultSet) -> new Team(resultSet.get(0),
+                        resultSet.get(1),
+                        resultSet.get(2))))
                 .all();
     }
 
     @Override
-    public Collection<Team> getTeammatesByTechLeader(TechLeaderEntity techLeader) {
+    public Collection<Team> getTeammatesByTechLeader(TechLeader techLeader) {
         return this.neo4jClient
-                .query("MATCH (t: TechLeader {name: $name, surname: $surname, email: $email})-" +
-                        "[:GIVE_TASKS_FOR]->(d: Developer) " +
-                        "MATCH (t)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-                        "RETURN collect(po), collect(t), collect(d)"
+                .query("MATCH (t: TechLeader {name: $name, surname: $surname, email: $email}) " +
+                        "OPTIONAL MATCH (t)-[:GIVE_TASKS_FOR]->(d: Developer) WITH t, collect(d) AS developers " +
+                        "OPTIONAL MATCH (t)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
+                        "RETURN collect(po), collect(t), developers"
                 )
-                .bind(techLeader.getName()).to("name")
-                .bind(techLeader.getSurname()).to("surname")
-                .bind(techLeader.getEmail()).to("email")
+                .bind(techLeader.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
+                .bind(techLeader.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
+                .bind(techLeader.getEmail()).to(TeamResultsUtils.EMPLOYEE_EMAIL)
                 .fetchAs(Team.class)
-                .mappedBy(((typeSystem, record) -> new Team(record.get(0),
-                        record.get(1),
-                        record.get(2))))
+                .mappedBy((typeSystem, resultSet) -> new Team(resultSet.get(0),
+                        resultSet.get(1),
+                        resultSet.get(2)))
                 .all();
     }
 
     @Override
-    public Collection<Team> getTeammatesByDeveloper(DeveloperEntity developer) {
+    public Collection<Team> getTeammatesByDeveloper(Developer developer) {
         return this.neo4jClient
-                .query("MATCH (d: Developer {name: $name, surname: $surname, email: $email})<-" +
-                        "[:GIVE_TASKS_FOR]-(t: TechLeader)-" +
-                        "[:GIVE_TASKS_FOR]->(od: Developer) " +
-                        "MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-                        "RETURN collect(po), collect(t), collect(od)"
+                .query("MATCH (d: Developer {name: $name, surname: $surname, email: $email}) " +
+                        "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(t: TechLeader) WITH d, collect(t) AS techLeaders " +
+                        "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)-[:GIVE_TASKS_FOR]->(od: Developer) " +
+                        "WITH d, techLeaders, collect(od) AS developers " +
+                        "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
+                        "RETURN collect(po), techLeaders, developers + d"
                 )
-                .bind(developer.getName()).to("name")
-                .bind(developer.getSurname()).to("surname")
-                .bind(developer.getEmail()).to("email")
+                .bind(developer.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
+                .bind(developer.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
+                .bind(developer.getEmail()).to(TeamResultsUtils.EMPLOYEE_EMAIL)
                 .fetchAs(Team.class)
-                .mappedBy(((typeSystem, record) -> new Team(record.get(0),
-                         record.get(1),
-                         record.get(2))))
-                .all();
+                .mappedBy(((typeSystem, resultSet) -> new Team(resultSet.get(0),
+                        resultSet.get(1),
+                        resultSet.get(2)))
+                ).all();
     }
 }

@@ -1,7 +1,7 @@
 package com.example.proj.mapper;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.model.DeveloperEntity;
+import com.example.proj.model.Developer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,8 +9,8 @@ public final class DeveloperMapper {
     private DeveloperMapper() {
     }
 
-    public DeveloperEntity map(EmployeeDTO employeeDTO) {
-        DeveloperEntity entity = new DeveloperEntity();
+    public Developer map(EmployeeDTO employeeDTO) {
+        Developer entity = new Developer();
 
         entity.setName(employeeDTO.getName());
         entity.setSurname(employeeDTO.getSurname());
@@ -18,7 +18,7 @@ public final class DeveloperMapper {
         return entity;
     }
 
-    public EmployeeDTO map(DeveloperEntity developerEntity) {
+    public EmployeeDTO map(Developer developerEntity) {
         return new EmployeeDTO.Builder()
                 .name(developerEntity.getName())
                 .surname(developerEntity.getSurname())

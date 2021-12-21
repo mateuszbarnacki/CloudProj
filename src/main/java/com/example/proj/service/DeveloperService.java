@@ -3,12 +3,11 @@ package com.example.proj.service;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.mapper.DeveloperMapper;
 import com.example.proj.mapper.EmployeeMapper;
-import com.example.proj.mapper.ProductOwnerMapper;
-import com.example.proj.mapper.TechLeaderMapper;
-import com.example.proj.model.DeveloperEntity;
+import com.example.proj.model.Developer;
 import com.example.proj.repository.DeveloperRepository;
 import com.example.proj.team.TeamResults;
 import com.example.proj.team.TeamResultsImpl;
+import com.example.proj.team.TeamResultsUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +41,13 @@ public class DeveloperService {
     }
 
     public List<EmployeeDTO> getTeammates(EmployeeDTO employeeDTO) {
-        DeveloperEntity developerEntity = developerMapper.map(employeeDTO);
-        List<TeamResults.Team> test = new ArrayList<>(teamResults.getTeammatesByDeveloper(developerEntity));
-        return new ArrayList<>();
+        Developer developerEntity = developerMapper.map(employeeDTO);
+        List<TeamResults.Team> data = new ArrayList<>(teamResults.getTeammatesByDeveloper(developerEntity));
+        return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }
 
     public Optional<EmployeeDTO> create(EmployeeDTO employeeDTO) {
-        DeveloperEntity entity = developerMapper.map(employeeDTO);
+        Developer entity = developerMapper.map(employeeDTO);
 
         return Optional.of(developerRepository.save(entity))
                 .map(developerMapper::map);
@@ -56,7 +55,7 @@ public class DeveloperService {
 
     public Optional<EmployeeDTO> update(EmployeeDTO employeeDTO) {
         if (Objects.nonNull(employeeDTO.getId())) {
-            DeveloperEntity entity = developerRepository.findById(employeeDTO.getId())
+            Developer entity = developerRepository.findById(employeeDTO.getId())
                     .orElseThrow(() ->
                             new NoSuchElementException("Couldn't find developer with id: " + employeeDTO.getId()));
             entity.setName(employeeDTO.getName());
@@ -70,7 +69,7 @@ public class DeveloperService {
     }
 
     public void delete(Long id) {
-        DeveloperEntity entity = developerRepository.findById(id)
+        Developer entity = developerRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Couldn't find developer with id: " + id));
         developerRepository.delete(entity);
     }

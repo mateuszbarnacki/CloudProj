@@ -1,27 +1,18 @@
 package com.example.proj.repository;
 
-import com.example.proj.dto.TeamDTO;
-import com.example.proj.model.DeveloperEntity;
+import com.example.proj.model.Developer;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DeveloperRepository extends Neo4jRepository<DeveloperEntity, Long> {
-    Optional<DeveloperEntity> findDeveloperEntityByNameAndSurnameAndEmail(String name, String surname, String email);
+public interface DeveloperRepository extends Neo4jRepository<Developer, Long> {
+    Optional<Developer> findDeveloperEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH (d: Developer) WHERE NOT (d)<-[:GIVE_TASKS_FOR]-(:TechLeader) RETURN collect(d)")
-    List<DeveloperEntity> customQueryGetAvailableDevelopers();
-
-    @Query("MATCH (d: Developer {name: $developer.name, surname: $developer.surname, email: $developer.email})<-" +
-            "[:GIVE_TASKS_FOR]-(t: TechLeader)-" +
-            "[:GIVE_TASKS_FOR]->(od: Developer) " +
-            "MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-            "RETURN collect(po), collect(t), collect(od)")
-    TeamDTO customQueryGetTeammates(@Param("developer") DeveloperEntity developer);
+    List<Developer> customQueryGetAvailableDevelopers();
 
 }

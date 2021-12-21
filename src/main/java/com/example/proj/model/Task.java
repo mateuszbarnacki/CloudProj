@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Getter
 @Setter
-public class TaskEntity {
+public class Task {
     private @Id @GeneratedValue Long id;
     private String description;
     private String project;
@@ -29,7 +29,7 @@ public class TaskEntity {
     @Relationship(type = "SOLVED_BY", direction = Relationship.Direction.OUTGOING)
     private Set<Employee> solvers = new HashSet<>();
 
-    public TaskEntity(String title, String content, String projectName, Status status) {
+    public Task(String title, String content, String projectName, Status status) {
         this.title = title;
         this.description = content;
         this.project = projectName;

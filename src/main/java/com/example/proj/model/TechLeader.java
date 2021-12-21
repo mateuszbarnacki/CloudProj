@@ -11,14 +11,14 @@ import java.util.Set;
 @Node("TechLeader")
 @Getter
 @Setter
-public class TechLeaderEntity extends Employee {
+public class TechLeader extends Employee {
 
     @Relationship(type = "GIVE_TASKS_FOR", direction = Relationship.Direction.OUTGOING)
-    private Set<DeveloperEntity> developers = new HashSet<>();
+    private Set<Developer> developers = new HashSet<>();
     @Relationship(type = "COOPERATES_WITH", direction = Relationship.Direction.OUTGOING)
-    private Set<ProductOwnerEntity> productOwners = new HashSet<>();
+    private Set<ProductOwner> productOwners = new HashSet<>();
 
-    public TechLeaderEntity() {
+    public TechLeader() {
         super();
     }
 

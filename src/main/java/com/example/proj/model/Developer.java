@@ -7,9 +7,9 @@ import org.springframework.data.neo4j.core.schema.Node;
 @Node("Developer")
 @Getter
 @Setter
-public class DeveloperEntity extends Employee {
+public class Developer extends Employee {
 
-    public DeveloperEntity() {
+    public Developer() {
         super();
     }
 

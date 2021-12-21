@@ -1,7 +1,7 @@
 package com.example.proj.mapper;
 
 import com.example.proj.dto.EmployeeDTO;
-import com.example.proj.model.ProductOwnerEntity;
+import com.example.proj.model.ProductOwner;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,8 +9,8 @@ public final class ProductOwnerMapper {
     private ProductOwnerMapper() {
     }
 
-    public ProductOwnerEntity map(EmployeeDTO employeeDTO) {
-        ProductOwnerEntity entity = new ProductOwnerEntity();
+    public ProductOwner map(EmployeeDTO employeeDTO) {
+        ProductOwner entity = new ProductOwner();
 
         entity.setName(employeeDTO.getName());
         entity.setSurname(employeeDTO.getSurname());
@@ -18,7 +18,7 @@ public final class ProductOwnerMapper {
         return entity;
     }
 
-    public EmployeeDTO map(ProductOwnerEntity entity) {
+    public EmployeeDTO map(ProductOwner entity) {
         return new EmployeeDTO.Builder()
                 .name(entity.getName())
                 .surname(entity.getSurname())
