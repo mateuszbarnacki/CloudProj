@@ -1,10 +1,9 @@
 package com.example.proj.team;
 
-import com.example.proj.model.DeveloperEntity;
-import com.example.proj.model.ProductOwnerEntity;
-import com.example.proj.model.TechLeaderEntity;
+import com.example.proj.model.Developer;
+import com.example.proj.model.ProductOwner;
+import com.example.proj.model.TechLeader;
 import org.neo4j.driver.Value;
-import org.neo4j.driver.internal.value.ListValue;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -21,14 +20,26 @@ public interface TeamResults {
             this.techLeader = techLeaderEntity;
             this.developer = developerEntity;
         }
+
+        public Value getProductOwner() {
+            return this.productOwner;
+        }
+
+        public Value getTechLeader() {
+            return this.techLeader;
+        }
+
+        public Value getDeveloper() {
+            return this.developer;
+        }
     }
 
     @Transactional(readOnly = true)
-    Collection<Team> getTeammatesByProductOwner(ProductOwnerEntity productOwner);
+    Collection<Team> getTeammatesByProductOwner(ProductOwner productOwner);
 
     @Transactional(readOnly = true)
-    Collection<Team> getTeammatesByTechLeader(TechLeaderEntity techLeader);
+    Collection<Team> getTeammatesByTechLeader(TechLeader techLeader);
 
     @Transactional(readOnly = true)
-    Collection<Team> getTeammatesByDeveloper(DeveloperEntity developer);
+    Collection<Team> getTeammatesByDeveloper(Developer developer);
 }
