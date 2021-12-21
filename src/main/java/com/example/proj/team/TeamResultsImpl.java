@@ -21,9 +21,9 @@ public class TeamResultsImpl implements TeamResults {
     public Collection<Team> getTeammatesByProductOwner(ProductOwner productOwner) {
         return this.neo4jClient
                 .query("MATCH (po: ProductOwner {name: $name, surname: $surname, email: $email}) " +
-                        "OPTIONAL MATCH (po)-[:COOPERATES_WITH]->(tl:TechLeader) WITH po, collect(tl) AS techLeaders " +
+                        "OPTIONAL MATCH (po)-[:COOPERATES_WITH]->(tl:TechLeader) WITH po, collect(distinct tl) AS techLeaders " +
                         "OPTIONAL MATCH (po)-[:COOPERATES_WITH]->(:TechLeader)-[:GIVE_TASKS_FOR]->(d:Developer) " +
-                        "RETURN collect(po), techLeaders, collect(d) AS developers"
+                        "RETURN collect(distinct po), techLeaders, collect(distinct d) AS developers"
                 )
                 .bind(productOwner.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
                 .bind(productOwner.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
@@ -39,9 +39,9 @@ public class TeamResultsImpl implements TeamResults {
     public Collection<Team> getTeammatesByTechLeader(TechLeader techLeader) {
         return this.neo4jClient
                 .query("MATCH (t: TechLeader {name: $name, surname: $surname, email: $email}) " +
-                        "OPTIONAL MATCH (t)-[:GIVE_TASKS_FOR]->(d: Developer) WITH t, collect(d) AS developers " +
+                        "OPTIONAL MATCH (t)-[:GIVE_TASKS_FOR]->(d: Developer) WITH t, collect(distinct d) AS developers " +
                         "OPTIONAL MATCH (t)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-                        "RETURN collect(po), collect(t), developers"
+                        "RETURN collect(distinct po), collect(distinct t), developers"
                 )
                 .bind(techLeader.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
                 .bind(techLeader.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
@@ -57,11 +57,11 @@ public class TeamResultsImpl implements TeamResults {
     public Collection<Team> getTeammatesByDeveloper(Developer developer) {
         return this.neo4jClient
                 .query("MATCH (d: Developer {name: $name, surname: $surname, email: $email}) " +
-                        "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(t: TechLeader) WITH d, collect(t) AS techLeaders " +
+                        "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(t: TechLeader) WITH d, collect(distinct t) AS techLeaders " +
                         "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)-[:GIVE_TASKS_FOR]->(od: Developer) " +
-                        "WITH d, techLeaders, collect(od) AS developers " +
+                        "WITH d, techLeaders, collect(distinct od) AS developers " +
                         "OPTIONAL MATCH (d)<-[:GIVE_TASKS_FOR]-(:TechLeader)<-[:COOPERATES_WITH]-(po:ProductOwner) " +
-                        "RETURN collect(po), techLeaders, developers + d"
+                        "RETURN collect(distinct po), techLeaders, developers + d"
                 )
                 .bind(developer.getName()).to(TeamResultsUtils.EMPLOYEE_NAME)
                 .bind(developer.getSurname()).to(TeamResultsUtils.EMPLOYEE_SURNAME)
