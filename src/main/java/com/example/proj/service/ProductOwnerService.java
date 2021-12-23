@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,6 +25,13 @@ public class ProductOwnerService {
     private final ProductOwnerRepository productOwnerRepository;
     private final ProductOwnerMapper productOwnerMapper;
     private final TeamResultsImpl teamResults;
+
+    public List<EmployeeDTO> getAll() {
+        return productOwnerRepository.findAll()
+                .stream()
+                .map(productOwnerMapper::map)
+                .collect(Collectors.toList());
+    }
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return productOwnerRepository.findProductOwnerEntityByNameAndSurnameAndEmail(name, surname, email)

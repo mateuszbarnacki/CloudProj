@@ -25,6 +25,14 @@ import java.util.List;
 public class DeveloperController {
     private final DeveloperService developerService;
 
+    @GetMapping("/all")
+    public String getAll(Model model) {
+        List<EmployeeDTO> developers = developerService.getAll();
+
+        model.addAttribute("developers", developers);
+        return "developer-list";
+    }
+
     @GetMapping("/{name}/{surname}/{email}")
     public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
                                                        @PathVariable String surname,

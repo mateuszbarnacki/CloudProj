@@ -17,12 +17,15 @@
 
     <form action="#" th:action="@{product_owner/create}"
           th:object="${product_owner}" method="POST">
-        <input type="text" th::field="*{name}" class="form-conrtol mb-4 col-4" placeholder="Name">
+        <input type="text" th::field="*{name}" class="form-control mb-4 col-4" placeholder="Name">
         <input type="text" th::field="*{surname}" class="form-control mb-4 col-4" placeholder="Surname">
         <input type="text" th::field="*{email}" class="form-control mb-4 col-4" placeholder="Email">
 
         <button type="submit" class="btn btn-info col-2">Save</button>
     </form>
+
+    <hr>
+    <a th:href="@{/product_owner/all}">Back to Product Owners list</a>
 </div>
 </body>
 </html>

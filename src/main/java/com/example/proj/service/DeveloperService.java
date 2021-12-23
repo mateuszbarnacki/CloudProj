@@ -28,6 +28,13 @@ public class DeveloperService {
     private final TeamResultsImpl teamResults;
     private final EmployeeMapper employeeMapper;
 
+    public List<EmployeeDTO> getAll() {
+        return developerRepository.findAll()
+                .stream()
+                .map(developerMapper::map)
+                .collect(Collectors.toList());
+    }
+
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return developerRepository.findDeveloperEntityByNameAndSurnameAndEmail(name, surname, email)
                 .map(employeeMapper::map);

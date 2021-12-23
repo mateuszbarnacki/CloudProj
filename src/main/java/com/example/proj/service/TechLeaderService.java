@@ -28,6 +28,13 @@ public class TechLeaderService {
     private final EmployeeMapper employeeMapper;
     private final TeamResultsImpl teamResults;
 
+    public List<EmployeeDTO> getAll() {
+        return techLeaderRepository.findAll()
+                .stream()
+                .map(techLeaderMapper::map)
+                .collect(Collectors.toList());
+    }
+
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
         return techLeaderRepository.findTechLeaderEntityByNameAndSurnameAndEmail(name, surname, email)
                 .map(employeeMapper::map);

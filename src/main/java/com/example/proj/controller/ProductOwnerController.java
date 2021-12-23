@@ -27,6 +27,14 @@ import java.util.List;
 public class ProductOwnerController {
     private final ProductOwnerService productOwnerService;
 
+    @GetMapping("/all")
+    public String getAll(Model model) {
+        List<EmployeeDTO> productOwners = productOwnerService.getAll();
+
+        model.addAttribute("product_owners", productOwners);
+        return "product-owner-list";
+    }
+
     @GetMapping("/{name}/{surname}/{email}")
     public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
                                                        @PathVariable String surname,

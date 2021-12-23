@@ -27,6 +27,14 @@ import java.util.List;
 public class TechLeaderController {
     private final TechLeaderService techLeaderService;
 
+    @GetMapping("/all")
+    public String getAll(Model model) {
+        List<EmployeeDTO> techLeaders = techLeaderService.getAll();
+
+        model.addAttribute("tech_leaders", techLeaders);
+        return "tech-leader-list";
+    }
+
     @GetMapping("/{name}/{surname}/{email}")
     public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
                                                        @PathVariable String surname,
