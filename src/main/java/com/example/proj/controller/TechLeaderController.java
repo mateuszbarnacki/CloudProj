@@ -50,8 +50,11 @@ public class TechLeaderController {
     }
 
     @GetMapping("/team")
-    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid TechLeaderDTO techLeaderDTO) {
-        return ResponseEntity.ok(techLeaderService.getTeammates(techLeaderDTO));
+    public String getTeammates(@RequestParam("techLeaderId") Long id, Model model) {
+        List<EmployeeDTO> teamMates = techLeaderService.getTeammates(id);
+
+        model.addAttribute("team", teamMates);
+        return "tech-leader-team-list";
     }
 
     @PatchMapping("/developer")

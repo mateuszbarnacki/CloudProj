@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -47,8 +45,11 @@ public class DeveloperController {
     }
 
     @GetMapping("/team")
-    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(developerService.getTeammates(employeeDTO));
+    public String getTeammates(@RequestParam("developerId") Long id, Model model) {
+        List<EmployeeDTO> teamMembers = developerService.getTeammates(id);
+
+        model.addAttribute("team", teamMembers);
+        return "developer-team-list";
     }
 
     @PostMapping("/create")

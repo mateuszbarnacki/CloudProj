@@ -9,6 +9,7 @@ import com.example.proj.team.TeamResults;
 import com.example.proj.team.TeamResultsImpl;
 import com.example.proj.team.TeamResultsUtils;
 import lombok.RequiredArgsConstructor;
+import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +52,9 @@ public class DeveloperService {
                 .collect(Collectors.toList());
     }
 
-    public List<EmployeeDTO> getTeammates(EmployeeDTO employeeDTO) {
-        Developer developerEntity = developerMapper.map(employeeDTO);
+    public List<EmployeeDTO> getTeammates(Long id) {
+        Developer developerEntity = developerRepository.findById(id)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't find developer with id: " + id));
         List<TeamResults.Team> data = new ArrayList<>(teamResults.getTeammatesByDeveloper(developerEntity));
         return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }

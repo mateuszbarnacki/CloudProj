@@ -45,8 +45,11 @@ public class ProductOwnerController {
     }
 
     @GetMapping("/team")
-    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid ProductOwnerDTO productOwnerDTO) {
-        return ResponseEntity.ok(productOwnerService.getTeammates(productOwnerDTO));
+    public String getTeammates(@RequestParam("productOwnerId") Long id, Model model) {
+        List<EmployeeDTO> teamMates = productOwnerService.getTeammates(id);
+
+        model.addAttribute("team", teamMates);
+        return "product-owner-team-list";
     }
 
     @PatchMapping("/tech_leader")

@@ -9,6 +9,7 @@ import com.example.proj.team.TeamResults;
 import com.example.proj.team.TeamResultsImpl;
 import com.example.proj.team.TeamResultsUtils;
 import lombok.RequiredArgsConstructor;
+import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,8 +43,9 @@ public class ProductOwnerService {
                 .map(productOwnerMapper::map);
     }
 
-    public List<EmployeeDTO> getTeammates(ProductOwnerDTO productOwnerDTO) {
-        ProductOwner entity = productOwnerMapper.map(productOwnerDTO);
+    public List<EmployeeDTO> getTeammates(Long id) {
+        ProductOwner entity = productOwnerRepository.findById(id)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't find product owner with id: " + id));
         List<TeamResults.Team> data = new ArrayList<>(teamResults.getTeammatesByProductOwner(entity));
         return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }

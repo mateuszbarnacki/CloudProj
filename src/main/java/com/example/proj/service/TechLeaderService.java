@@ -9,6 +9,7 @@ import com.example.proj.team.TeamResults;
 import com.example.proj.team.TeamResultsImpl;
 import com.example.proj.team.TeamResultsUtils;
 import lombok.RequiredArgsConstructor;
+import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +51,9 @@ public class TechLeaderService {
                 .collect(Collectors.toList());
     }
 
-    public List<EmployeeDTO> getTeammates(TechLeaderDTO techLeaderDTO) {
-        TechLeader entity = techLeaderMapper.map(techLeaderDTO);
+    public List<EmployeeDTO> getTeammates(Long id) {
+        TechLeader entity = techLeaderRepository.findById(id)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't find tech leader with id: " + id));
         List<TeamResults.Team> data = new ArrayList<>(teamResults.getTeammatesByTechLeader(entity));
         return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }
