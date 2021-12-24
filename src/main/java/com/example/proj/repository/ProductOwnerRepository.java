@@ -12,13 +12,11 @@ import java.util.Optional;
 public interface ProductOwnerRepository extends Neo4jRepository<ProductOwner, Long> {
     Optional<ProductOwner> findProductOwnerEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
-    @Query("MATCH (po:ProductOwner {name: $productOwnerName, surname: $productOwnerSurname, email: $productOwnerEmail}) " +
+    @Query("MATCH (po:ProductOwner) WHERE id(po) = $productOwnerId " +
             "OPTIONAL MATCH (po)-[r:COOPERATES_WITH]->(:TechLeader) WITH po, r " +
             "OPTIONAL MATCH (po)-[r:COOPERATES_WITH]->(:TechLeader)-[nr:GIVE_TASKS_FOR]->(:Developer) " +
             "DELETE r, nr, po")
-    void customQueryCloseTeam(@Param("productOwnerName") String productOwnerName,
-                              @Param("productOwnerSurname") String productOwnerSurname,
-                              @Param("productOwnerEmail") String productOwnerEmail);
+    void customQueryCloseTeam(@Param("productOwnerId") Long productOwnerId);
 
     @Query("MATCH (po:ProductOwner {name: $productOwnerName, surname: $productOwnerSurname, email: $productOwnerEmail}), " +
             "(tl:TechLeader {name: $techLeaderName, surname: $techLeaderSurname, email: $techLeaderEmail}) " +

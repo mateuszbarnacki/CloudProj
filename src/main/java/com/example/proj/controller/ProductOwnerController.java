@@ -2,21 +2,21 @@ package com.example.proj.controller;
 
 import com.example.proj.dto.DuetDTO;
 import com.example.proj.dto.EmployeeDTO;
+import com.example.proj.dto.ProductOwnerDTO;
 import com.example.proj.service.ProductOwnerService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,14 +29,14 @@ public class ProductOwnerController {
 
     @GetMapping("/all")
     public String getAll(Model model) {
-        List<EmployeeDTO> productOwners = productOwnerService.getAll();
+        List<ProductOwnerDTO> productOwners = productOwnerService.getAll();
 
         model.addAttribute("product_owners", productOwners);
         return "product-owner-list";
     }
 
     @GetMapping("/{name}/{surname}/{email}")
-    public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
+    public ResponseEntity<ProductOwnerDTO> getSingleRecord(@PathVariable String name,
                                                        @PathVariable String surname,
                                                        @PathVariable String email) {
         return productOwnerService.getSingleRecord(name, surname, email)
@@ -45,45 +45,45 @@ public class ProductOwnerController {
     }
 
     @GetMapping("/team")
-    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(productOwnerService.getTeammates(employeeDTO));
+    public ResponseEntity<List<EmployeeDTO>> getTeammates(@RequestBody @Valid ProductOwnerDTO productOwnerDTO) {
+        return ResponseEntity.ok(productOwnerService.getTeammates(productOwnerDTO));
     }
 
     @PatchMapping("/tech_leader")
-    public ResponseEntity<EmployeeDTO> addTechLeader(@RequestBody @Valid DuetDTO duet) {
+    public ResponseEntity<ProductOwnerDTO> addTechLeader(@RequestBody @Valid DuetDTO duet) {
         return productOwnerService.addTechLead(duet.getFirst(), duet.getSecond())
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
     }
 
-    @PostMapping("")
-    public String create(@ModelAttribute("product_owner") EmployeeDTO employeeDTO) {
-        productOwnerService.create(employeeDTO)
-                .map(ResponseEntity::ok)
+    @PostMapping("/create")
+    public String create(@ModelAttribute("product_owner") ProductOwnerDTO productOwnerDTO) {
+        productOwnerService.create(productOwnerDTO)
                 .orElseThrow(() -> new IllegalStateException("Couldn't create product owner entity!"));
-        return "redirect:/product_owner/list";
-    }
-
-    @PutMapping("")
-    public ResponseEntity<EmployeeDTO> update(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        return productOwnerService.update(employeeDTO)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalStateException("Couldn't update product owner entity!"));
-    }
-
-    @DeleteMapping("/close")
-    public ResponseEntity<?> closeTeam(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        productOwnerService.closeTeam(employeeDTO);
-        return ResponseEntity.ok()
-                .build();
+        return "redirect:/product_owner/all";
     }
 
     @GetMapping("/showFormForAdd")
     public String showFormForAdd(Model model) {
-        EmployeeDTO employeeDTO = new EmployeeDTO();
+        ProductOwnerDTO productOwnerDTO = new ProductOwnerDTO();
 
-        model.addAttribute("product_owner", employeeDTO);
+        model.addAttribute("product_owner", productOwnerDTO);
 
         return "product-owner-form";
+    }
+
+    @GetMapping("/showFormForUpdate")
+    public String showFormForUpdate(@RequestParam("productOwnerId") Long id, Model model) {
+        ProductOwnerDTO productOwner = productOwnerService.findById(id)
+                .orElseThrow(() -> new NoSuchRecordException("Couldn't find product owner with id: " + id));
+        model.addAttribute("product_owner", productOwner);
+        return "product-owner-form";
+    }
+
+    @GetMapping("/closeTeam")
+    public String closeTeam(@RequestParam("productOwnerId") Long id) {
+        productOwnerService.closeTeam(id);
+
+        return "redirect:/product_owner/all";
     }
 }

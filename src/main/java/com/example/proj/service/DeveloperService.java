@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,6 +32,11 @@ public class DeveloperService {
                 .stream()
                 .map(developerMapper::map)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<EmployeeDTO> findById(Long id) {
+        return developerRepository.findById(id)
+                .map(developerMapper::map);
     }
 
     public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
@@ -58,21 +62,6 @@ public class DeveloperService {
 
         return Optional.of(developerRepository.save(entity))
                 .map(developerMapper::map);
-    }
-
-    public Optional<EmployeeDTO> update(EmployeeDTO employeeDTO) {
-        if (Objects.nonNull(employeeDTO.getId())) {
-            Developer entity = developerRepository.findById(employeeDTO.getId())
-                    .orElseThrow(() ->
-                            new NoSuchElementException("Couldn't find developer with id: " + employeeDTO.getId()));
-            entity.setName(employeeDTO.getName());
-            entity.setSurname(employeeDTO.getSurname());
-            entity.setEmail(employeeDTO.getEmail());
-
-            return Optional.of(developerRepository.save(entity))
-                    .map(employeeMapper::map);
-        }
-        return Optional.empty();
     }
 
     public void delete(Long id) {

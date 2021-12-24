@@ -15,11 +15,12 @@
 
     <p class="h4 mb-4">Save Developer</p>
 
-    <form action="#" th:action="@{developer/create}"
+    <form action="#" th:action="@{create}"
           th:object="${developer}" method="POST">
-        <input type="text" th::field="*{name}" class="form-control mb-4 col-4" placeholder="Name">
-        <input type="text" th::field="*{surname}" class="form-control mb-4 col-4" placeholder="Surname">
-        <input type="text" th::field="*{email}" class="form-control mb-4 col-4" placeholder="Email">
+        <input type="hidden" th:field="${developer.id}"/>
+        <input type="text" th:field="${developer.name}" class="form-control mb-4 col-4" placeholder="Name">
+        <input type="text" th:field="${developer.surname}" class="form-control mb-4 col-4" placeholder="Surname">
+        <input type="text" th:field="${developer.email}" class="form-control mb-4 col-4" placeholder="Email">
 
         <button type="submit" class="btn btn-info col-2">Save</button>
     </form>

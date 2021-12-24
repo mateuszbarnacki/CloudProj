@@ -12,6 +12,7 @@ public final class DeveloperMapper {
     public Developer map(EmployeeDTO employeeDTO) {
         Developer entity = new Developer();
 
+        entity.setId(employeeDTO.getId());
         entity.setName(employeeDTO.getName());
         entity.setSurname(employeeDTO.getSurname());
         entity.setEmail(employeeDTO.getEmail());
@@ -20,6 +21,7 @@ public final class DeveloperMapper {
 
     public EmployeeDTO map(Developer developerEntity) {
         return new EmployeeDTO.Builder()
+                .id(developerEntity.getId())
                 .name(developerEntity.getName())
                 .surname(developerEntity.getSurname())
                 .email(developerEntity.getEmail())

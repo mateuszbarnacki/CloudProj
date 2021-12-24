@@ -15,11 +15,14 @@
 
     <p class="h4 mb-4">Save Tech Leader</p>
 
-    <form action="#" th:action="@{tech_leader/create}"
+    <form action="#" th:action="@{create}"
           th:object="${tech_leader}" method="POST">
-        <input type="text" th::field="*{name}" class="form-control mb-4 col-4" placeholder="Name">
-        <input type="text" th::field="*{surname}" class="form-control mb-4 col-4" placeholder="Surname">
-        <input type="text" th::field="*{email}" class="form-control mb-4 col-4" placeholder="Email">
+        <input type="hidden" th:field="${tech_leader.id}"/>
+        <input type="text" th:field="${tech_leader.name}" class="form-control mb-4 col-4" placeholder="Name">
+        <input type="text" th:field="${tech_leader.surname}" class="form-control mb-4 col-4" placeholder="Surname">
+        <input type="text" th:field="${tech_leader.email}" class="form-control mb-4 col-4" placeholder="Email">
+        <input type="hidden" th:field="${tech_leader.developers}"/>
+        <input type="hidden" th:field="${tech_leader.productOwners}"/>
 
         <button type="submit" class="btn btn-info col-2">Save</button>
     </form>
