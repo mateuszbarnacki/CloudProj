@@ -1,6 +1,5 @@
 package com.example.proj.controller;
 
-import com.example.proj.dto.DuetDTO;
 import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.dto.ProductOwnerDTO;
 import com.example.proj.service.ProductOwnerService;
@@ -11,14 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -26,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductOwnerController {
     private final ProductOwnerService productOwnerService;
+    private static final String REDIRECTION = "redirect:/product_owner/all";
+    private static final String FORM = "product-owner-form";
 
     @GetMapping("/all")
     public String getAll(Model model) {
@@ -33,15 +30,6 @@ public class ProductOwnerController {
 
         model.addAttribute("product_owners", productOwners);
         return "product-owner-list";
-    }
-
-    @GetMapping("/{name}/{surname}/{email}")
-    public ResponseEntity<ProductOwnerDTO> getSingleRecord(@PathVariable String name,
-                                                       @PathVariable String surname,
-                                                       @PathVariable String email) {
-        return productOwnerService.getSingleRecord(name, surname, email)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new NoSuchRecordException("Couldn't find tech leader record."));
     }
 
     @GetMapping("/team")
@@ -52,18 +40,20 @@ public class ProductOwnerController {
         return "product-owner-team-list";
     }
 
-    @PatchMapping("/tech_leader")
-    public ResponseEntity<ProductOwnerDTO> addTechLeader(@RequestBody @Valid DuetDTO duet) {
-        return productOwnerService.addTechLead(duet.getFirst(), duet.getSecond())
+    @GetMapping("/tech_leader")
+    public String addTechLeader(@RequestParam("productOwnerId") Long productOwnerId,
+                                @RequestParam("techLeaderId") Long techLeaderId) {
+       productOwnerService.addTechLead(productOwnerId, techLeaderId)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't make relation between TechLeader and Developer!"));
+       return REDIRECTION;
     }
 
     @PostMapping("/create")
     public String create(@ModelAttribute("product_owner") ProductOwnerDTO productOwnerDTO) {
         productOwnerService.create(productOwnerDTO)
                 .orElseThrow(() -> new IllegalStateException("Couldn't create product owner entity!"));
-        return "redirect:/product_owner/all";
+        return REDIRECTION;
     }
 
     @GetMapping("/showFormForAdd")
@@ -72,7 +62,7 @@ public class ProductOwnerController {
 
         model.addAttribute("product_owner", productOwnerDTO);
 
-        return "product-owner-form";
+        return FORM;
     }
 
     @GetMapping("/showFormForUpdate")
@@ -80,13 +70,13 @@ public class ProductOwnerController {
         ProductOwnerDTO productOwner = productOwnerService.findById(id)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't find product owner with id: " + id));
         model.addAttribute("product_owner", productOwner);
-        return "product-owner-form";
+        return FORM;
     }
 
     @GetMapping("/closeTeam")
     public String closeTeam(@RequestParam("productOwnerId") Long id) {
         productOwnerService.closeTeam(id);
 
-        return "redirect:/product_owner/all";
+        return REDIRECTION;
     }
 }

@@ -40,11 +40,6 @@ public class DeveloperService {
                 .map(developerMapper::map);
     }
 
-    public Optional<EmployeeDTO> getSingleRecord(String name, String surname, String email) {
-        return developerRepository.findDeveloperEntityByNameAndSurnameAndEmail(name, surname, email)
-                .map(employeeMapper::map);
-    }
-
     public List<EmployeeDTO> getAvailableDevelopers() {
         return developerRepository.customQueryGetAvailableDevelopers()
                 .stream()

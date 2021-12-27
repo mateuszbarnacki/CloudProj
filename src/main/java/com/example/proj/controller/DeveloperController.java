@@ -4,12 +4,10 @@ import com.example.proj.dto.EmployeeDTO;
 import com.example.proj.service.DeveloperService;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.exceptions.NoSuchRecordException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DeveloperController {
     private final DeveloperService developerService;
+    private static final String REDIRECTION = "redirect:/developer/all";
+    private static final String FORM = "developer-form";
 
     @GetMapping("/all")
     public String getAll(Model model) {
@@ -30,18 +30,13 @@ public class DeveloperController {
         return "developer-list";
     }
 
-    @GetMapping("/{name}/{surname}/{email}")
-    public ResponseEntity<EmployeeDTO> getSingleRecord(@PathVariable String name,
-                                                       @PathVariable String surname,
-                                                       @PathVariable String email) {
-        return developerService.getSingleRecord(name, surname, email)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new NoSuchRecordException("Couldn't find tech leader record."));
-    }
-
     @GetMapping("/available")
-    public ResponseEntity<List<EmployeeDTO>> getAvailableDevelopers() {
-        return ResponseEntity.ok(developerService.getAvailableDevelopers());
+    public String getAvailableDevelopers(@RequestParam("techLeaderId") Long id, Model model) {
+        List<EmployeeDTO> developers = developerService.getAvailableDevelopers();
+
+        model.addAttribute("availableDevelopers", developers);
+        model.addAttribute("techLeaderId", id);
+        return "developer-available-list";
     }
 
     @GetMapping("/team")
@@ -56,7 +51,7 @@ public class DeveloperController {
     public String create(@ModelAttribute("developer") EmployeeDTO employeeDTO) {
         developerService.create(employeeDTO)
                 .orElseThrow(() -> new IllegalStateException("Couldn't create developer entity!"));
-        return "redirect:/developer/all";
+        return REDIRECTION;
     }
 
     @GetMapping("/showFormForAdd")
@@ -65,7 +60,7 @@ public class DeveloperController {
 
         model.addAttribute("developer", employeeDTO);
 
-        return "developer-form";
+        return FORM;
     }
 
     @GetMapping("/showFormForUpdate")
@@ -73,13 +68,13 @@ public class DeveloperController {
         EmployeeDTO developer = developerService.findById(id)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't find developer with id: " + id));
         model.addAttribute("developer", developer);
-        return "developer-form";
+        return FORM;
     }
 
     @GetMapping("/delete")
     public String delete(@RequestParam("developerId") Long id) {
         developerService.delete(id);
 
-        return "redirect:/developer/all";
+        return REDIRECTION;
     }
 }

@@ -38,11 +38,6 @@ public class ProductOwnerService {
                 .map(productOwnerMapper::map);
     }
 
-    public Optional<ProductOwnerDTO> getSingleRecord(String name, String surname, String email) {
-        return productOwnerRepository.findProductOwnerEntityByNameAndSurnameAndEmail(name, surname, email)
-                .map(productOwnerMapper::map);
-    }
-
     public List<EmployeeDTO> getTeammates(Long id) {
         ProductOwner entity = productOwnerRepository.findById(id)
                 .orElseThrow(() -> new NoSuchRecordException("Couldn't find product owner with id: " + id));
@@ -50,9 +45,8 @@ public class ProductOwnerService {
         return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }
 
-    public Optional<ProductOwnerDTO> addTechLead(EmployeeDTO productOwnerDTO, EmployeeDTO techLeadDTO) {
-        return productOwnerRepository.customQueryAddTechLead(productOwnerDTO.getName(), productOwnerDTO.getSurname(),
-                        productOwnerDTO.getEmail(), techLeadDTO.getName(), techLeadDTO.getSurname(), techLeadDTO.getEmail())
+    public Optional<ProductOwnerDTO> addTechLead(Long productOwnerId, Long techLeadId) {
+        return productOwnerRepository.customQueryAddTechLead(productOwnerId, techLeadId)
                 .map(productOwnerMapper::map);
     }
 

@@ -39,11 +39,6 @@ public class TechLeaderService {
                 .map(techLeaderMapper::map);
     }
 
-    public Optional<TechLeaderDTO> getSingleRecord(String name, String surname, String email) {
-        return techLeaderRepository.findTechLeaderEntityByNameAndSurnameAndEmail(name, surname, email)
-                .map(techLeaderMapper::map);
-    }
-
     public List<TechLeaderDTO> getAvailableTechLeaders() {
         return techLeaderRepository.customQueryGetAvailableTechLeaders()
                 .stream()
@@ -58,9 +53,8 @@ public class TechLeaderService {
         return TeamResultsUtils.retrieveEmployeesDataFromTeammatesResultSet(data);
     }
 
-    public Optional<TechLeaderDTO> addDeveloper(EmployeeDTO techLeaderDTO, EmployeeDTO developerDTO) {
-        return techLeaderRepository.customQueryAddDeveloper(techLeaderDTO.getName(), techLeaderDTO.getSurname(),
-                        techLeaderDTO.getEmail(), developerDTO.getName(), developerDTO.getSurname(), developerDTO.getEmail())
+    public Optional<TechLeaderDTO> addDeveloper(Long techLeaderId, Long developerId) {
+        return techLeaderRepository.customQueryAddDeveloper(techLeaderId, developerId)
                 .map(techLeaderMapper::map);
     }
 

@@ -12,6 +12,7 @@ public final class EmployeeMapper {
 
     public EmployeeDTO map(Employee employee) {
         return new EmployeeDTO.Builder()
+                .id(employee.getId())
                 .name(employee.getName())
                 .surname(employee.getSurname())
                 .email(employee.getEmail())

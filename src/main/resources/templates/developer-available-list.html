@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>Tech Leader</title>
+    <title>Developers</title>
 </head>
 <body>
-<h3 class="h3List">Tech Leader Teammates</h3>
+<h3 class="h3List">Available Developers</h3>
 <hr style="height: 3px">
 
 <div class="container">
@@ -20,14 +19,22 @@
             <th class="text-center">Name</th>
             <th class="text-center">Surname</th>
             <th class="text-center">Email</th>
+            <th class="text-center">Action</th>
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="teamMember : ${team}">
-            <td th:text="${teamMember.name}" class="text-center"/>
-            <td th:text="${teamMember.surname}" class="text-center"/>
-            <td th:text="${teamMember.email}" class="text-center"/>
+        <tr th:each="singleDeveloper : ${availableDevelopers}">
+            <td th:text="${singleDeveloper.id}" style="display: none"/>
+            <td th:text="${singleDeveloper.name}" class="text-center"/>
+            <td th:text="${singleDeveloper.surname}" class="text-center"/>
+            <td th:text="${singleDeveloper.email}" class="text-center"/>
+            <td class="text-center">
+                <a th:href="@{/tech_leader/developer(techLeaderId=${techLeaderId} ,developerId=${singleDeveloper.id})}"
+                   class="btn btn-success btn-sm">
+                    Add
+                </a>
+            </td>
         </tr>
         </tbody>
     </table>

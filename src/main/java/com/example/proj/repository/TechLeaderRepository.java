@@ -11,20 +11,15 @@ import java.util.Optional;
 
 @Repository
 public interface TechLeaderRepository extends Neo4jRepository<TechLeader, Long> {
-    Optional<TechLeader> findTechLeaderEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH (tl: TechLeader) WHERE NOT (tl)<-[:COOPERATES_WITH]-(:ProductOwner) RETURN collect(tl)")
     List<TechLeader> customQueryGetAvailableTechLeaders();
 
-    @Query("MATCH (tl: TechLeader{name: $techLeaderName, surname: $techLeaderSurname, email: $techLeaderEmail}), " +
-            "(d: Developer{name: $developerName, surname: $developerSurname, email: $developerEmail}) " +
+    @Query("MATCH (tl: TechLeader), (d: Developer) " +
+            "WHERE id(tl) = $techLeaderId AND id(d) = $developerId " +
             "CREATE (tl)-[:GIVE_TASKS_FOR]->(d) " +
             "RETURN tl")
-    Optional<TechLeader> customQueryAddDeveloper(@Param("techLeaderName") String techLeaderName,
-                                                 @Param("techLeaderSurname") String techLeaderSurname,
-                                                 @Param("techLeaderEmail") String techLeaderEmail,
-                                                 @Param("developerName") String developerName,
-                                                 @Param("developerSurname") String developerSurname,
-                                                 @Param("developerEmail") String developerEmail);
+    Optional<TechLeader> customQueryAddDeveloper(@Param("techLeaderId") Long techLeaderId,
+                                                 @Param("developerId") Long developerId);
 
 }

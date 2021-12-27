@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProductOwnerRepository extends Neo4jRepository<ProductOwner, Long> {
-    Optional<ProductOwner> findProductOwnerEntityByNameAndSurnameAndEmail(String name, String surname, String email);
 
     @Query("MATCH (po:ProductOwner) WHERE id(po) = $productOwnerId " +
             "OPTIONAL MATCH (po)-[r:COOPERATES_WITH]->(:TechLeader) WITH po, r " +
@@ -18,14 +17,10 @@ public interface ProductOwnerRepository extends Neo4jRepository<ProductOwner, Lo
             "DELETE r, nr, po")
     void customQueryCloseTeam(@Param("productOwnerId") Long productOwnerId);
 
-    @Query("MATCH (po:ProductOwner {name: $productOwnerName, surname: $productOwnerSurname, email: $productOwnerEmail}), " +
-            "(tl:TechLeader {name: $techLeaderName, surname: $techLeaderSurname, email: $techLeaderEmail}) " +
+    @Query("MATCH (po:ProductOwner), (tl:TechLeader) " +
+            "WHERE id(po) = $productOwnerId AND id(tl) = $techLeadId " +
             "CREATE (po)-[:COOPERATES_WITH]->(tl) " +
             "RETURN po")
-    Optional<ProductOwner> customQueryAddTechLead(@Param("productOwnerName") String productOwnerName,
-                                                  @Param("productOwnerSurname") String productOwnerSurname,
-                                                  @Param("productOwnerEmail") String email,
-                                                  @Param("techLeaderName") String techLeaderName,
-                                                  @Param("techLeaderSurname") String techLeaderSurname,
-                                                  @Param("techLeaderEmail") String techLeaderEmail);
+    Optional<ProductOwner> customQueryAddTechLead(@Param("productOwnerId") Long productOwnerId,
+                                                  @Param("techLeadId") Long techLeadId);
 }
